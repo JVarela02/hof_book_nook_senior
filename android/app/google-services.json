@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "317220222843",
+    "firebase_url": "https://hofbooknook-8e5a0-default-rtdb.firebaseio.com",
+    "project_id": "hofbooknook-8e5a0",
+    "storage_bucket": "hofbooknook-8e5a0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317220222843:android:ea3fbfcb27eceaaed92fde",
+        "android_client_info": {
+          "package_name": "com.example.hofbooknook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317220222843-4uis7p2m0g3e53kteo7942c1att8nucg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7DSh89KxAxH3RUU0IiZmtPLFwuo-CC88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317220222843-4uis7p2m0g3e53kteo7942c1att8nucg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317220222843:android:54e94f2cb590f9e9d92fde",
+        "android_client_info": {
+          "package_name": "com.example.the_hof_book_nook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "317220222843-4uis7p2m0g3e53kteo7942c1att8nucg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7DSh89KxAxH3RUU0IiZmtPLFwuo-CC88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "317220222843-4uis7p2m0g3e53kteo7942c1att8nucg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

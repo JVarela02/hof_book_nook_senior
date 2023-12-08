@@ -5,16 +5,18 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:the_hof_book_nook/auth/auth_page.dart';
+//import 'package:the_hof_book_nook/auth/auth_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
-import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
+//import 'package:the_hof_book_nook/pages/in%20app/support_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
+//import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
+//import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_hof_book_nook/read%20data/get_textbook_info.dart';
 import '../sign ins/login_page.dart';
-import '../sign ins/register_page.dart';
+//import '../sign ins/register_page.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -118,6 +120,16 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
+                  ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return NotificationPage();
+                    }));
+                  }, // route to account page
+                  child: Text('Notifications'),
+                ),
                 ],
               ),
             ),

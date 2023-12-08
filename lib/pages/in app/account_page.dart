@@ -7,8 +7,10 @@ import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/removetxt_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/support_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
-import 'package:the_hof_book_nook/read data/get_account_info.dart';
+//import 'package:the_hof_book_nook/read data/get_account_info.dart';
+import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 
 class accountPage extends StatefulWidget {
   const accountPage({super.key});
@@ -136,6 +138,16 @@ class _accountPageState extends State<accountPage> {
                       child: Text('My Account', 
                       style: TextStyle(fontWeight: FontWeight.bold),),
                     ),
+                    ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return NotificationPage();
+                    }));
+                  }, // route to account page
+                  child: Text('Notification'),
+                ),
                   ],
                 ),
             ),
@@ -197,7 +209,25 @@ class _accountPageState extends State<accountPage> {
             //     ),         
             //   ),
             // ),
+          SizedBox(height: 30,),
 
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton( 
+                onPressed: () {
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return SupportPage();
+                          },
+                        ),);},
+                child: Text("Get Help",
+                  style: TextStyle(color: Colors.white),
+                ),         
+              ),
+            ),
 
           ],
         ),

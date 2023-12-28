@@ -99,46 +99,66 @@ class _accountPageState extends State<accountPage> {
           )],
     ),
 
-  body: 
-      Center(
+  body: Center(
         child: Column(
           children: [
             Container(
-                padding: const EdgeInsets.all(10),
-                child: ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize
-                      .min, // this will take space as minimum as posible(to center)
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: (){
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                       return HomePage();
-                        }));
-                      }, // route to account page
-                      child: Text('Home'),
+              padding: const EdgeInsets.all(10),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return HomePage();
+                      }));
+                    }, // route to account page
+                    child: Text('Home',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                       return MyListingsPage();
-                        }));
-                      }, // route to my page ... this page ...
-                      child: Text('My Listings'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return MyListingsPage();
+                      }));
+                    }, // route to my page ... this page ...
+                    child: Column(
+                      children: [
+                        Text(
+                          'My'
+                        ),
+                        Text(
+                          'Listings'
+                        ),
+
+                      ],),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return accountPage();
+                      }));
+                    },
+                    child: Column(
+                      children: [
+                      Text(
+                      'My'
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
-                       return accountPage();
-                        }));
-                      },
-                      child: Text('My Account', 
-                      style: TextStyle(fontWeight: FontWeight.bold),),
-                    ),
-                    ElevatedButton(
+                        Text(
+                          'Account'
+                        ),
+
+                      ],),
+                  ),
+                  ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -146,10 +166,10 @@ class _accountPageState extends State<accountPage> {
                       return NotificationPage();
                     }));
                   }, // route to account page
-                  child: Text('Notification'),
+                  child: Text('Notifications'),
                 ),
-                  ],
-                ),
+                ],
+              ),
             ),
            
 
@@ -197,18 +217,6 @@ class _accountPageState extends State<accountPage> {
               ),
             ),
 
-          SizedBox(height: 30,),
-
-            // SizedBox(
-            //   height: 60,
-            //   width: 300,
-            //   child: ElevatedButton( 
-            //     onPressed: signout,
-            //     child: Text("Sign Out",
-            //       style: TextStyle(color: Colors.white),
-            //     ),         
-            //   ),
-            // ),
           SizedBox(height: 30,),
 
             SizedBox(

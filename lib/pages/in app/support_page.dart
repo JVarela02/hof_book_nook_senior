@@ -24,19 +24,41 @@ class SupportPage extends StatefulWidget {
 class _SupportPageState extends State<SupportPage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  List<String> fullNames = [];
+  final _transactionIDController = TextEditingController();
+  final _situationController = TextEditingController();
+
+  @override
+  void dispose() {
+    _transactionIDController.dispose();
+    _situationController.dispose();
+    super.dispose();
+  }
 
   Future getfullName() async {
-    await FirebaseFirestore.instance.collection('users')
-    .where('email', isEqualTo: user.email)
-    .get().then(
-      (snapshot) => snapshot.docs.forEach(
-        (document) {
-          print(document.reference);
-          fullNames.add(document.reference.id);
-        },
-      ),
-    );
+    var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email);
+    var querySnapshot = await collection.get();
+    var finalName = "";
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var firstName = data['first name'];
+      var lastName = data['last name'];
+      String fullName = firstName + " " + lastName;
+      finalName = fullName;
+    }
+    return finalName;
+  }
+
+  Future confirmNoEmpty() async {
+    if(_transactionIDController.text.toString().isEmpty | _situationController.text.toString().isEmpty) {
+      showEmptyErrorResponseDialogBox();
+    }
+    else{
+      var userName = await getfullName();
+      emailSupport(username: userName, transaction: _transactionIDController.text.toString(), user_email: user.email.toString(), message: _situationController.text.toString());
+    }
+
   }
 
   Future emailSupport({
@@ -95,6 +117,29 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
+    void showEmptyErrorResponseDialogBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Expanded(
+          child: AlertDialog(
+            title: Text('ERROR'),
+            content: Text('Please make sure all information is filled out'),
+            actions: [
+              TextButton(
+                //textColor: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OKAY'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
     @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,51 +180,80 @@ class _SupportPageState extends State<SupportPage> {
           )
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          //ListView(children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: ButtonBar(
-              alignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize
-                  .min, // this will take space as minimum as posible(to center)
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return HomePage();
-                    }));
-                  }, // "route" to home page
-                  child: Text('Home'),
+      body: SafeArea(
+      child: Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 207, 230, 247),
+                      border: Border.all(
+                          color: Color.fromARGB(255, 235, 235, 235), width: 3),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: TextField(
+                        controller: _transactionIDController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Transaction ID",
+                        ),
+                      ),
+                    ),
+                  ),
+            ),
+      
+            SizedBox(height:15),
+      
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Container(
+                height: 400,
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 207, 230, 247),
+                      border: Border.all(
+                          color: Color.fromARGB(255, 235, 235, 235), width: 3),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 6.0),
+                      child: TextField(
+                        controller: _situationController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Situation",
+                        ),
+                      ),
+                    ),
+                  ),
+            ),
+      
+            SizedBox(height:15),
+      
+              SizedBox(
+                height: 60,
+                width: 300,
+                child: ElevatedButton( 
+                  onPressed: () async {
+                    confirmNoEmpty()
+                    // emailSupport(username: "Must Fix", user_email: user.email.toString(), transaction: _transactionIDController.text.toString(), message: _situationController.text.toString())
+                     ;},
+                  child: Text("Email Support?",
+                    style: TextStyle(color: Colors.white),
+                  ),         
                 ),
-              ],
-            ),
-          ),
-          //],),
-
-          SizedBox(
-            height: 10,
-          ),
-          SizedBox(height: 30,),
-
-            SizedBox(
-              height: 60,
-              width: 300,
-              child: ElevatedButton( 
-                onPressed: () async {
-                  emailSupport(username: fullNames[0], user_email: user.email.toString(), transaction: "WaWaWa", message: "This user has an issue")
-                   ;},
-                child: Text("Email Support?",
-                  style: TextStyle(color: Colors.white),
-                ),         
               ),
-            ),
-        ],
+      
+          ],
+        ),
       ),
-    );
+    ),
+      ),
+      );
   }
 }

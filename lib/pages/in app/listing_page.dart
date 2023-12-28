@@ -138,51 +138,66 @@ class _MyListingsPageState extends State<MyListingsPage> {
           )
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          //ListView(children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: ButtonBar(
-              alignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize
-                  .min, // this will take space as minimum as posible(to center)
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return HomePage();
-                    }));
-                  }, // "route" to home page
-                  child: Text('Home'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return MyListingsPage();
-                    }));
-                  }, // route to my page ... this page ...
-                  child: Text(
-                    'My Listings',
-                    style: TextStyle(fontWeight: FontWeight.w900),
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return HomePage();
+                      }));
+                    }, // route to account page
+                    child: Text('Home',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return accountPage();
-                    }));
-                  }, // route to account page
-                  child: Text('My Account'),
-                ),
-                ElevatedButton(
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return MyListingsPage();
+                      }));
+                    }, // route to my page ... this page ...
+                    child: Column(
+                      children: [
+                        Text(
+                          'My'
+                        ),
+                        Text(
+                          'Listings'
+                        ),
+
+                      ],),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return accountPage();
+                      }));
+                    },
+                    child: Column(
+                      children: [
+                      Text(
+                      'My'
+                    ),
+                        Text(
+                          'Account'
+                        ),
+
+                      ],),
+                  ),
+                  ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -190,47 +205,47 @@ class _MyListingsPageState extends State<MyListingsPage> {
                       return NotificationPage();
                     }));
                   }, // route to account page
-                  child: Text('Notification'),
+                  child: Text('Notifications'),
                 ),
-              ],
+                ],
+              ),
             ),
-          ),
-          //],),
-
-          SizedBox(
-            height: 10,
-          ),
-
-          Expanded(
-            child: FutureBuilder(
-              future: getTextbooks(),
-              builder: (context, snapshot) {
-                return ListView.builder(
-                  itemCount: myListingRefernces.length,
-                  itemBuilder: ((context, index) {
-                    if (myListingRefernces.isNotEmpty) {
-                      return ListTile(
-                        leading: GetCover(coverForSale: myListingRefernces[index],),// This will turn into photo of textbook
-                        title: GetTitle(
-                          titleForSale: myListingRefernces[index],
-                        ), 
-                        subtitle:
-                            GetPriceCondition(conpriceForSale: myListingRefernces[index]),
-                        trailing: Icon(
-                          Icons.square_outlined,
-                        ),
-                        onTap: () => showDialogBox(myListingRefernces[
-                            index]), // Will be used for "In Negotiations" if done
-                      );
-                    } else {
-                      return SizedBox(height: 20);
-                    }
-                  }),
-                );
-              },
+      
+            SizedBox(
+              height: 10,
             ),
-          ),
-        ],
+      
+            Expanded(
+              child: FutureBuilder(
+                future: getTextbooks(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    itemCount: myListingRefernces.length,
+                    itemBuilder: ((context, index) {
+                      if (myListingRefernces.isNotEmpty) {
+                        return ListTile(
+                          leading: GetCover(coverForSale: myListingRefernces[index],),// This will turn into photo of textbook
+                          title: GetTitle(
+                            titleForSale: myListingRefernces[index],
+                          ), 
+                          subtitle:
+                              GetPriceCondition(conpriceForSale: myListingRefernces[index]),
+                          trailing: Icon(
+                            Icons.square_outlined,
+                          ),
+                          onTap: () => showDialogBox(myListingRefernces[
+                              index]), // Will be used for "In Negotiations" if done
+                        );
+                      } else {
+                        return SizedBox(height: 20);
+                      }
+                    }),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

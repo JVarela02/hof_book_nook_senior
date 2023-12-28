@@ -84,8 +84,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(10),
               child: ButtonBar(
                 alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize
-                    .min, // this will take space as minimum as posible(to center)
+                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
@@ -95,7 +94,9 @@ class _HomePageState extends State<HomePage> {
                         return HomePage();
                       }));
                     }, // route to account page
-                    child: Text('Home'),
+                    child: Text('Home',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -105,7 +106,16 @@ class _HomePageState extends State<HomePage> {
                         return MyListingsPage();
                       }));
                     }, // route to my page ... this page ...
-                    child: Text('My Listings'),
+                    child: Column(
+                      children: [
+                        Text(
+                          'My'
+                        ),
+                        Text(
+                          'Listings'
+                        ),
+
+                      ],),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -115,10 +125,16 @@ class _HomePageState extends State<HomePage> {
                         return accountPage();
                       }));
                     },
-                    child: Text(
-                      'My Account',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    child: Column(
+                      children: [
+                      Text(
+                      'My'
                     ),
+                        Text(
+                          'Account'
+                        ),
+
+                      ],),
                   ),
                   ElevatedButton(
                   onPressed: () {

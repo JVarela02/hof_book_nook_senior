@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+//import 'package:flutter/src/widgets/container.dart';
+//import 'package:flutter/src/widgets/framework.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/removetxt_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/support_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/credit_page.dart';
 //import 'package:the_hof_book_nook/read data/get_account_info.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 
@@ -232,6 +233,25 @@ class _accountPageState extends State<accountPage> {
                           },
                         ),);},
                 child: Text("Get Help",
+                  style: TextStyle(color: Colors.white),
+                ),         
+              ),
+            ),
+            SizedBox(height: 30,),
+
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton( 
+                onPressed: () {
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return creditPage();
+                          },
+                        ),);},
+                child: Text("Purchase Credits",
                   style: TextStyle(color: Colors.white),
                 ),         
               ),

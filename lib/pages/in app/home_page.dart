@@ -10,6 +10,7 @@ import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
+import 'package:the_hof_book_nook/pages/in%20app/wishlist_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:the_hof_book_nook/read%20data/get_textbook_info.dart';
@@ -339,7 +340,8 @@ class _ResultsPageState extends State<ResultsPage> {
               child: Column(
                 children: [
                   Image.network(link),
-                  Text(detailDescription + '\n \nInterested in this book? Email the seller of this book!'),
+                  Text(detailDescription +
+                      '\n \nInterested in this book? Email the seller of this book!'),
                 ],
               ),
             ),
@@ -444,10 +446,12 @@ class _ResultsPageState extends State<ResultsPage> {
             itemBuilder: ((context, index) {
               if (searchRefernces.isNotEmpty) {
                 return ListTile(
-                  leading: GetCover(coverForSale: searchRefernces[index]), // This will turn into photo of textbook
+                  leading: GetCover(
+                      coverForSale: searchRefernces[
+                          index]), // This will turn into photo of textbook
                   title: GetTitle(
                     titleForSale: searchRefernces[index],
-                  ), 
+                  ),
                   subtitle:
                       GetCondition(conditionForSale: searchRefernces[index]),
                   trailing: GetPrice(priceForSale: searchRefernces[index]),

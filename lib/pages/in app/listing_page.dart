@@ -1,4 +1,4 @@
-  import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -55,11 +55,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                     'InNegotiations': true,
                   });
                   Navigator.popUntil(context, (route) => false);
-                  Navigator.push(context,MaterialPageRoute(
-                    builder: (context) {
-                    return MyListingsPage();
-                    },
-                  ),);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MyListingsPage();
+                      },
+                    ),
+                  );
                 },
                 child: Text('CHANGE TO \'In Negotiations\''),
               ),
@@ -73,11 +76,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                     'InNegotiations': false,
                   });
                   Navigator.popUntil(context, (route) => false);
-                  Navigator.push(context,MaterialPageRoute(
-                    builder: (context) {
-                    return MyListingsPage();
-                    },
-                  ),);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return MyListingsPage();
+                      },
+                    ),
+                  );
                 },
                 child: Text('RESET STATUS'),
               ),
@@ -94,7 +100,6 @@ class _MyListingsPageState extends State<MyListingsPage> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -198,12 +203,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                   itemBuilder: ((context, index) {
                     if (myListingRefernces.isNotEmpty) {
                       return ListTile(
-                        leading: GetCover(coverForSale: myListingRefernces[index],),// This will turn into photo of textbook
+                        leading: GetCover(
+                          coverForSale: myListingRefernces[index],
+                        ), // This will turn into photo of textbook
                         title: GetTitle(
                           titleForSale: myListingRefernces[index],
-                        ), 
-                        subtitle:
-                            GetPriceCondition(conpriceForSale: myListingRefernces[index]),
+                        ),
+                        subtitle: GetPriceCondition(
+                            conpriceForSale: myListingRefernces[index]),
                         trailing: Icon(
                           Icons.square_outlined,
                         ),

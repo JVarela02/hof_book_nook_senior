@@ -101,11 +101,9 @@ class _LoginPageState extends State<LoginPage> {
     print(response.body);
   }
 
-
-
-    sendCode(var loggedemail,int code) {
+  sendCode(var loggedemail,int code) {
     codeToDatabase(loggedemail, code);
-    }
+  }
  
   Future signIn() async{
     if(_loginController.text.contains("pride.hofstra.edu"))

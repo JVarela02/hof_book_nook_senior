@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -61,6 +64,12 @@ class _RegisterPageState extends State<RegisterPage> {
     else{
       return false;
     }
+  }
+
+  int codeGenerator() {
+    int code = Random().nextInt(89999) + 10000; 
+    print(code);
+    return code;
   }
 
   Future signUp() async{
@@ -132,13 +141,48 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  Future emailAuth(
+    {required name,
+    required code,
+    required email,}
+  ) async {
+    final serviceId = 'service_1lu743t';
+    final templateId = 'template_1pu7cem';
+    final userId = 'O7K884SMxRo1npb9t';
+
+    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    final response = await http.post(
+      url,
+      headers: {
+        'origin': 'http://localhost',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'service_id': serviceId,
+        'template_id': templateId,
+        'user_id': userId,
+        'template_params': {
+          'first_name': name,
+          'code': code,
+          'user_email' : email
+        }
+      }),
+    );
+    print(response.body);
+  }
+
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
+    int code = codeGenerator();
     await FirebaseFirestore.instance.collection("users").add({
       'first name': firstName,
       'last name': lastName,
       'username': userName,
       'email': email,
+      'credits': 0,
+      'auth': code
     });
+    String fullName = firstName + " " + lastName;
+    emailAuth(name: fullName, code: code, email: email);
   }
 
   @override

@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 //import '../../main.dart';
 import 'forgot_pw_page.dart';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
  
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -21,6 +24,86 @@ class _LoginPageState extends State<LoginPage> {
   // text controllers
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
+
+    int codeGenerator(var loggedemail) {
+    int code = Random().nextInt(89999) + 10000; 
+    print(code);
+    sendCode(loggedemail, code);
+    return code;
+  }
+
+  Future getfullName(loggedemail) async {
+    var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: loggedemail);
+    var querySnapshot = await collection.get();
+    var finalName = "";
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var firstName = data['first name'];
+      var lastName = data['last name'];
+      String fullName = firstName + " " + lastName;
+      finalName = fullName;
+    }
+    return finalName;
+  }
+
+
+  // send auth code to DB 
+  Future codeToDatabase(var loggedemail, int authcode) async {
+    var documentIDList = [];
+    await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: loggedemail).get().then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print("reference id is " + document.reference.id);
+              documentIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var user_name = await getfullName(loggedemail);
+    final document = FirebaseFirestore.instance.collection('users').doc(documentIDList[0]);
+    document.update({'auth': authcode,});
+
+
+    // email user 
+    emailAuth(name: user_name, code: authcode, email:loggedemail);
+
+    }
+
+  // email auth code to user 
+  Future emailAuth(
+    {required name,
+    required code,
+    required email,}
+  ) async {
+    final serviceId = 'service_1lu743t';
+    final templateId = 'template_1pu7cem';
+    final userId = 'O7K884SMxRo1npb9t';
+
+    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    final response = await http.post(
+      url,
+      headers: {
+        'origin': 'http://localhost',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'service_id': serviceId,
+        'template_id': templateId,
+        'user_id': userId,
+        'template_params': {
+          'first_name': name,
+          'code': code,
+          'user_email' : email
+        }
+      }),
+    );
+    print(response.body);
+  }
+
+  sendCode(var loggedemail,int code) {
+    codeToDatabase(loggedemail, code);
+  }
  
   Future signIn() async{
     if(_loginController.text.contains("pride.hofstra.edu"))
@@ -30,6 +113,7 @@ class _LoginPageState extends State<LoginPage> {
           email: _loginController.text.trim(),
           password: _passwordController.text.trim()
           );
+        codeGenerator(_loginController.text.trim());
         } on Exception catch (e) {
         showDialog(context: context, builder: (context){
               return const AlertDialog(
@@ -55,6 +139,7 @@ class _LoginPageState extends State<LoginPage> {
               email: emailLogin,
               password: _passwordController.text.trim()
               );
+            codeGenerator(emailLogin);
             } on Exception catch (e) {
             showDialog(context: context, builder: (context){
                   return const AlertDialog(

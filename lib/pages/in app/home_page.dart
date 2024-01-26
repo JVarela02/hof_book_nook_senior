@@ -54,15 +54,14 @@ class _HomePageState extends State<HomePage> {
             child: Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                  onTap: () async {
-                    FirebaseAuth.instance.signOut();
+                  onTap: ()  async {
+                    await FirebaseAuth.instance.signOut();
                     Navigator.popUntil(context, (route) => false);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return LoginPage(
-                            showRegisterPage: () {},
+                          return LoginPage(showRegisterPage: () {  },
                           );
                         },
                       ),

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/src/widgets/container.dart';
 //import 'package:flutter/src/widgets/framework.dart';
-//import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 //import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 //import 'package:the_hof_book_nook/pages/in%20app/removetxt_page.dart';
 //import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
@@ -172,7 +172,9 @@ class _CreditPageState extends State<CreditPage> {
                               //print(documents);
                                   documents.update({
                                     'credits': creditIDList[1] + 5,
+                              
                               });
+                              creditIDList[1] = creditIDList[1] + 5;
                              // });
                               });
                             },
@@ -183,7 +185,7 @@ class _CreditPageState extends State<CreditPage> {
                               print('cancelled: $params');
                             }),
                       ),
-                    )
+                    ),
                   },
               child: const Text("Buy Five Dollars")),
           ElevatedButton(
@@ -250,6 +252,7 @@ class _CreditPageState extends State<CreditPage> {
                                   documents.update({
                                     'credits': creditIDList[1] + 15,
                               });
+                              creditIDList[1] = creditIDList[1] + 15;
                               });
                             },
                             onError: (error) {
@@ -326,6 +329,7 @@ class _CreditPageState extends State<CreditPage> {
                                   documents.update({
                                     'credits': creditIDList[1] + 20,
                               });
+                              creditIDList[1] = creditIDList[1] + 20;
                               });
                             },
                             onError: (error) {
@@ -402,6 +406,7 @@ class _CreditPageState extends State<CreditPage> {
                                   documents.update({
                                     'credits': creditIDList[1] + 50,
                               });
+                              creditIDList[1] = creditIDList[1] + 50;
                               });
                             },
                             onError: (error) {
@@ -478,6 +483,7 @@ class _CreditPageState extends State<CreditPage> {
                                   documents.update({
                                     'credits': creditIDList[1] + 75,
                               });
+                              creditIDList[1] = creditIDList[1] + 75;
                               });
                             },
                             onError: (error) {
@@ -554,6 +560,7 @@ class _CreditPageState extends State<CreditPage> {
                                   documents.update({
                                     'credits': creditIDList[1] + 100,
                               });
+                              creditIDList[1] = creditIDList[1] + 100;
                               });
                             },
                             onError: (error) {
@@ -570,7 +577,6 @@ class _CreditPageState extends State<CreditPage> {
             )
           )
         );
-      
   }
 }
 

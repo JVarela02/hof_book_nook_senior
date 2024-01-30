@@ -8,6 +8,7 @@ import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/removetxt_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/txtinput_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/support_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/wishlist_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/forgot_pw_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/credit_page.dart';
@@ -257,6 +258,30 @@ class _accountPageState extends State<accountPage> {
                 child: Text("Purchase Credits",
                   style: TextStyle(color: Colors.white),
                 ),         
+              ),
+            ),
+
+            SizedBox(
+              height: 30,
+            ),
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return WishlistPage();
+                      },
+                    ),
+                  );
+                },
+                child: Text(
+                  "Wishlist",
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
             ),
 

@@ -16,39 +16,39 @@ import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 
-class creditPage extends StatefulWidget {
-  const creditPage({super.key});
+class CreditPage extends StatefulWidget {
+  const CreditPage({super.key});
 
   @override
-  State<creditPage> createState() => _creditPageState();
+  State<CreditPage> createState() => _CreditPageState();
 }
 
-class _creditPageState extends State<creditPage> {
+class _CreditPageState extends State<CreditPage> {
    final user = FirebaseAuth.instance.currentUser!;
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Purchase Credits',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Purchase Credits'),
-    );
-  }
-}
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Purchase Credits',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: const MyHomePage(title: 'Purchase Credits'),
+//     );
+//   }
+// }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+// class MyHomePage extends StatefulWidget {
+//   const MyHomePage({Key? key, required this.title}) : super(key: key);
+//   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+//   @override
+//   State<MyHomePage> createState() => _MyHomePageState();
+// }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final user = FirebaseAuth.instance.currentUser!;
+//class _MyHomePageState extends State<MyHomePage> {
+  //final user = FirebaseAuth.instance.currentUser!;
 
   List<dynamic> creditIDList = [];
   //List<dynamic> creditsList = [];
@@ -87,17 +87,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
-          leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return accountPage();
-                      }));
-                    }
-          ),
+          title: Text("Purchase Credits"),
+          // leading: IconButton(
+          // icon: Icon(Icons.arrow_back, color: Colors.black),
+          // onPressed: () {
+          //             Navigator.of(context).pop();
+          //             Navigator.push(context,
+          //                 MaterialPageRoute(builder: (BuildContext context) {
+          //               return accountPage();
+          //             }));
+          //           }
+          // ),
         ),
         body: Center(
           child: Column(

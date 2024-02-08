@@ -9,6 +9,8 @@ import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:the_hof_book_nook/auth/auth_code_page.dart';
+
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
   const RegisterPage({super.key, required this.showLoginPage});
@@ -171,6 +173,22 @@ class _RegisterPageState extends State<RegisterPage> {
     print(response.body);
   }
 
+  createAuth(
+    {required name,
+    required code,
+    required email,}
+  ){
+    emailAuth(name: name, code: code, email: email);
+    Navigator.of(context).pop();
+    Navigator.push(context,
+      MaterialPageRoute(builder: (BuildContext context) {
+        return AuthCodePage();
+      })); 
+
+  }
+
+
+
   Future addUserDetails(String firstName, String lastName, String userName, String email) async{
     int code = codeGenerator();
     await FirebaseFirestore.instance.collection("users").add({
@@ -182,7 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'auth': code
     });
     String fullName = firstName + " " + lastName;
-    emailAuth(name: fullName, code: code, email: email);
+    createAuth(name: fullName, code: code, email: email);
   }
 
   @override

@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_hof_book_nook/auth/auth_code_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 //import '../../main.dart';
 import 'forgot_pw_page.dart';
 import 'dart:math';
@@ -24,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   // text controllers
   final _loginController = TextEditingController();
   final _passwordController = TextEditingController();
+  late final _authcodeController = TextEditingController();
 
     int codeGenerator(var loggedemail) {
     int code = Random().nextInt(89999) + 10000; 
@@ -103,7 +106,14 @@ class _LoginPageState extends State<LoginPage> {
 
   sendCode(var loggedemail,int code) {
     codeToDatabase(loggedemail, code);
+    Navigator.of(context).pop();
+    Navigator.push(context,
+      MaterialPageRoute(builder: (BuildContext context) {
+        return AuthCodePage();
+      })); 
   }
+
+
  
   Future signIn() async{
     if(_loginController.text.contains("pride.hofstra.edu"))
@@ -162,6 +172,7 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _loginController.dispose();
     _passwordController.dispose();
+   _authcodeController.dispose();
     super.dispose();
   }
  

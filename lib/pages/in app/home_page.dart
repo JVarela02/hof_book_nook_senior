@@ -14,6 +14,7 @@ import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 //import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:the_hof_book_nook/pages/transactions/purchase_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_textbook_info.dart';
 import '../sign ins/login_page.dart';
 //import '../sign ins/register_page.dart';
@@ -376,20 +377,25 @@ class _ResultsPageState extends State<ResultsPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('CANCEL'),
+                child: Text('Close'),
               ),
               TextButton(
                 //textColor: Colors.black,
-                onPressed: () async {
-                  await getUsers();
-                  sendEmail(
-                      name: finalName, //current user name
-                      email: user.email.toString(), // user's email address
-                      textbook: txtName, //when api is implemented
-                      selleremail: SellerEmail); // seller's email address
-                  Navigator.of(context).pop();
+                onPressed: 
+                () 
+                async {
+                  Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return PurchasePage(data2);}));
+                  // await getUsers();
+                  // sendEmail(
+                  //     name: finalName, //current user name
+                  //     email: user.email.toString(), // user's email address
+                  //     textbook: txtName, //when api is implemented
+                  //     selleremail: SellerEmail); // seller's email address
+                  // Navigator.of(context).pop();
                 },
-                child: Text('SEND EMAIL'),
+                child: Text('Purchase'),
               ),
             ],
           ),

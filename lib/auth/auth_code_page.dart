@@ -7,7 +7,7 @@ import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 
 class AuthCodePage extends StatefulWidget {
-  const AuthCodePage({super.key});
+  const AuthCodePage({Key? key}) : super(key: key);
 
   @override
   State<AuthCodePage> createState() => _AuthCodePageState();

@@ -5,6 +5,8 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/confirm_exchange_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/confirm_purchase.dart';
 
 
 class PurchasePage extends StatefulWidget {
@@ -137,6 +139,8 @@ class _PurchasePageState extends State<PurchasePage> {
 
   String difference = "N/A";
   int buyerPrice = 0;
+  Map<String, dynamic> exchangeBook = {};
+
 
   calculateDifference(var exItem){
     print("Calculating differece");
@@ -150,16 +154,68 @@ class _PurchasePageState extends State<PurchasePage> {
       for(book in buyerBooks){
         print("In other loops");
         if(book["Title"] == exItem){
+          print("exchange book is " + book.toString());
           buyerPrice = int.parse(book["Price"]);
           print("buyer price = " + buyerPrice.toString());
+          print("exchange author is " + book["Author"]);
+          exchangeBook = book;
         }
       }
     }
+    print("Book for sale is + " + itemID.toString());
     print("for sale item price = " + itemID.toString());
     int priceDif = int.parse(itemID["Price"]) - buyerPrice;
     difference = priceDif.toString();
   }
   
+
+
+  var buyerName = "";
+  Future getBuyerName() async{
+  var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email);
+    var querySnapshot = await collection.get();
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var firstName = data['first name'];
+      var lastName = data['last name'];
+      String fullName = firstName + " " + lastName;
+      buyerName = fullName;
+    }
+  }
+
+
+  var sellerName = "";
+  Future getSellerName() async{
+  var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: itemID["Seller"]);
+    var querySnapshot = await collection.get();
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var firstName = data['first name'];
+      var lastName = data['last name'];
+      String fullName = firstName + " " + lastName;
+      sellerName = fullName;
+    }
+    await getBuyerName();
+  }
+
+  Future confirmExchangePageRoute() async{
+    await getSellerName();
+    Navigator.push(context,
+      MaterialPageRoute(builder: (BuildContext context) {
+      return ConfirmExchangePage(itemID, exchangeBook, sellerName, buyerName, difference);}));
+  }
+
+  Future confirmPurchasePageRoute() async{
+    await getSellerName();
+    Navigator.push(context,
+      MaterialPageRoute(builder: (BuildContext context) {
+      return ConfirmPurchasePage(itemID, sellerName, buyerName, user.email.toString());}));
+  }
+
 
   
 
@@ -235,11 +291,7 @@ class _PurchasePageState extends State<PurchasePage> {
                     
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (BuildContext context) {
-                            return HomePage();
-                          }));
+                          confirmPurchasePageRoute();
                         }, // route to account page
                         child: Text('Purchase with Credits',
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -282,11 +334,7 @@ class _PurchasePageState extends State<PurchasePage> {
                     
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (BuildContext context) {
-                            return HomePage();
-                          }));
+                          confirmExchangePageRoute();
                         }, // route to account page
                         child: Text('Exchange',
                           style: TextStyle(fontWeight: FontWeight.bold),

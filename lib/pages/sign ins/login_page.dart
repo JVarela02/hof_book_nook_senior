@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
 
 
     // email user 
-    emailAuth(name: user_name, code: authcode, email:loggedemail);
+    //emailAuth(name: user_name, code: authcode, email:loggedemail);
 
     }
 

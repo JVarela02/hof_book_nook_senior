@@ -202,18 +202,31 @@ class _PurchasePageState extends State<PurchasePage> {
     await getBuyerName();
   }
 
+  /*var sellerEmail = "";
+  Future getSellerEmail() async{
+  var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: itemID["Seller"]);
+    var querySnapshot = await collection.get();
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var sellerEmail = data['Seller'];
+    }
+    await getBuyerName();
+  }*/
+
   Future confirmExchangePageRoute() async{
     await getSellerName();
     Navigator.push(context,
       MaterialPageRoute(builder: (BuildContext context) {
-      return ConfirmExchangePage(itemID, exchangeBook, sellerName, buyerName, difference);}));
+      return ConfirmExchangePage(itemID, exchangeBook, sellerName, buyerName, difference,itemID["Seller"].toString(),user.email.toString());}));
   }
 
   Future confirmPurchasePageRoute() async{
     await getSellerName();
     Navigator.push(context,
       MaterialPageRoute(builder: (BuildContext context) {
-      return ConfirmPurchasePage(itemID, sellerName, buyerName, user.email.toString());}));
+      return ConfirmPurchasePage(itemID, sellerName, buyerName, user.email.toString(),itemID["Seller"].toString());}));
   }
 
 

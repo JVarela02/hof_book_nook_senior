@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -32,43 +33,64 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     String buyerEmail;
   ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName, this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
-final user = FirebaseAuth.instance.currentUser!;
 
-  List<dynamic> buyerBooks = [];
-  var buyerISBN;
-
-  //get reference ID for credits
-  Future getBuyerBooks() async {
-    List<String> buyerReferences = [];
-    print("In getBuyerBooks");
+  Future confirmUniqueCode(int code) async {
+    List<dynamic> references = [];  
     await FirebaseFirestore.instance
-          .collection('textbooks')
-          .where('Seller', isEqualTo: user.email)
+          .collection('transactions')
+          .where('transaction_ID', isEqualTo: code)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
               (document) {
                 //print(document.reference.id);
-                buyerReferences.add(document.reference.id);
+                references.add(document.reference.id);
               },
             ),
           );
-    var collection = FirebaseFirestore.instance.collection('textbooks');
-    var bReferences;
-    for(bReferences in buyerReferences){
-      var docSnapshot = await collection.doc(bReferences).get();
-      if(docSnapshot.exists){
-        Map<String,dynamic>? item = docSnapshot.data();
-        buyerBooks.add(item);
-      }
-    }
-    //print("Buyer References is of length " + buyerReferences.length.toString());
-    //print("Buyer Books is of length " + buyerBooks.length.toString() );
-    //print(buyerBooks);
-    }
+    if(references.length > 1){return false;}
+    else{return true;}
+  }
 
-  List<dynamic> wishBooks = [];
-  var wishISBN;
+  Future codeGenerator() async {
+    int code = Random().nextInt(8999999999) + 1000000000; 
+    bool unique = await confirmUniqueCode(code);
+    if(unique == true){return code;}
+    else{codeGenerator();}
+    // print(code);
+  }
+
+  var forSaleReference = "";
+  var forExchangeReference = "";
+  Future getReferenceIDs() async {
+    await FirebaseFirestore.instance
+          .collection('textbooks')
+          .where('ISBN', isEqualTo: forSaleBook)
+          .where('Seller', isEqualTo: sellerEmail)
+          .get()
+          .then(
+            (snapshot) => snapshot.docs.forEach(
+              (document) {
+                //print(document.reference.id);
+                forSaleReference = document.reference.id;
+              },
+            ),
+          );
+
+      await FirebaseFirestore.instance
+          .collection('textbooks')
+          .where('ISBN', isEqualTo: forSaleBook)
+          .where('Seller', isEqualTo: buyerEmail)
+          .get()
+          .then(
+            (snapshot) => snapshot.docs.forEach(
+              (document) {
+                //print(document.reference.id);
+                forExchangeReference = document.reference.id;
+              },
+            ),
+          );
+  }
 
 
   Future emailSeller({
@@ -101,159 +123,62 @@ final user = FirebaseAuth.instance.currentUser!;
     print(response.body);
   }
 
-  Future getWishBooks() async {
-    List<dynamic> wishReferences = [];
-    print("In getWishBooks");
-    //print(forSaleBook["Seller"]);   
-    await FirebaseFirestore.instance
-          .collection('wishlist')
-          .where('User', isEqualTo: forSaleBook["Seller"])
-          .get()
-          .then(
-            (snapshot) => snapshot.docs.forEach(
-              (document) {
-                //print(document.reference.id);
-                wishReferences.add(document.reference.id);
-              },
-            ),
-          );
-    var collection = FirebaseFirestore.instance.collection('wishlist');
-    var references;
-    for(references in wishReferences){
-      var docSnapshot = await collection.doc(references).get();
-      if(docSnapshot.exists){
-        Map<String,dynamic>? item = docSnapshot.data();
-        wishBooks.add(item);
-      }
-    }
-    //print(wishBooks.length);
-    //print(wishBooks);
 
-    
-    }
-
-  int countRuns = 0;
-
-  List<String> crossReference = ["Exchangeables", "No Items Available"];
-  String exchangeValue = "Exchangeables";
-
-
-  Future compareBooks() async {
-    countRuns += 1;
-    print("In compareBooks run: " + countRuns.toString());
-    if(countRuns == 1){
-    await getWishBooks();
-    await getBuyerBooks();
-    }
-    else{
-      print("did this already");
-    }
-    // List<String> crossReference = ["Exchangeables", "No Items Available"];
-    int wL = wishBooks.length;
-    print("length of Wl = " + wL.toString());
-    int bL = buyerBooks.length;
-    print("length of bL = "  + bL.toString());
-    var wishItem;
-    var buyerItem;
-    print("going to for loop");
-    for(wishItem in wishBooks){
-      print("in loop 1 - " + wishItem["ISBN"]);
-      for(buyerItem in buyerBooks){
-        print("Comparing " + wishItem["ISBN"] + " to " + buyerItem["ISBN"]);
-        if (wishItem["ISBN"] == buyerItem["ISBN"]){
-          if(crossReference.contains(wishItem["Title"])){
-            print("already there");
-          }
-          else{
-          String textbook = wishItem["Title"]; 
-          crossReference.add(textbook);
-          }
-        } 
-      }
-    }
-    print(crossReference);
-    if(crossReference.length > 1){
-      crossReference.remove("No Items Available");
-    }
-
-    return crossReference;
-  }
-
-  String difference = "N/A";
-  int buyerPrice = 0;
-  //Map<String, dynamic> exchangeBook = {};
-
-
-  calculateDifference(var exItem){
-    print("Calculating differece");
-    var book;
-    if(exItem == "Exchangeables" || exItem == "No Items Available"){
-      difference = "N/A";
-      print("No calc needed");
-      return;
-    }
-    else{
-      for(book in buyerBooks){
-        print("In other loops");
-        if(book["Title"] == exItem){
-          print("exchange book is " + book.toString());
-          buyerPrice = int.parse(book["Price"]);
-          print("buyer price = " + buyerPrice.toString());
-          print("exchange author is " + book["Author"]);
-          exchangeBook = book;
-        }
-      }
-    }
-    print("Book for sale is + " + forSaleBook.toString());
-    print("for sale item price = " + forSaleBook.toString());
-    int priceDif = int.parse(forSaleBook["Price"]) - buyerPrice;
-    difference = priceDif.toString();
-  }
-  
-
-
-  //var buyerName = "";
-  Future getBuyerName() async{
-  var collection = FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: user.email);
-    var querySnapshot = await collection.get();
-    for (var queryDocumentSnapshot in querySnapshot.docs) {
-      Map<String, dynamic> data = queryDocumentSnapshot.data();
-      var firstName = data['first name'];
-      var lastName = data['last name'];
-      String fullName = firstName + " " + lastName;
-      buyerName = fullName;
-    }
-  }
-
-  Future sendNotification() async {
-    final notification = <String, String> {
-      "header" : buyerName+ " wants to buy your book!",
+  Future sendNotification(int transaction_ID) async {
+    final notification = <String, dynamic> {
+      "header" : buyerName+ " wants to make a exchange for your book!",
       "message" : buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"],
       "read" : "false",
       "recipient" : sellerEmail,
-      "sender" : buyerEmail
+      "sender" : buyerEmail,
+      "transaction_ID" : transaction_ID
     };
     var db = FirebaseFirestore.instance;
     db.collection("notifications").doc().set(notification);
   }
 
-  //var sellerName = "";
-  Future getSellerName() async{
-  var collection = FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: forSaleBook["Seller"]);
-    var querySnapshot = await collection.get();
-    for (var queryDocumentSnapshot in querySnapshot.docs) {
-      Map<String, dynamic> data = queryDocumentSnapshot.data();
-      var firstName = data['first name'];
-      var lastName = data['last name'];
-      String fullName = firstName + " " + lastName;
-      sellerName = fullName;
-    }
-    await getBuyerName();
+  Future createTransaction() async{
+    int code = await codeGenerator();
+    await FirebaseFirestore.instance.collection("transactions").add({
+      'seller' : sellerName,
+      'seller_email' : sellerEmail,
+      'buyer' : buyerName,
+      'buyer_email' : buyerEmail,
+      'forSale' : {
+        'Author' : forSaleBook['Author'],
+        'Condition' : forSaleBook['Condition'],
+        'Cover' : forSaleBook['Cover'],
+        'Description' : forSaleBook['Description'],
+        'ISBN' : forSaleBook['ISBN'],
+        'Price' : forSaleBook['Price'],
+        'Title' : forSaleBook['Title'],
+        'Seller' : forSaleBook['Seller'],
+      },
+      'forExchange' : {
+        'Author' : exchangeBook['Author'],
+        'Condition' : exchangeBook['Condition'],
+        'Cover' : exchangeBook['Cover'],
+        'Description' : exchangeBook['Description'],
+        'ISBN' : exchangeBook['ISBN'],
+        'Price' : exchangeBook['Price'],
+        'Title' : exchangeBook['Title'],
+        'Seller' : exchangeBook['Seller'],
+      },
+      'remainder' : priceDifference,
+      'status' : "offer",
+      'transaction_ID' : code
+    });
+
+    // Set textbooks as in negotiations so it doesn't appear as available for sale 
+    final saleDocument = FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference);
+    saleDocument.update({'InNegotiations': true,});
+    final exchangeDocument = FirebaseFirestore.instance.collection('textbooks').doc(forExchangeReference);
+    exchangeDocument.update({'InNegotiations': true,});
+
+    sendNotification(code);
+    emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -368,7 +293,7 @@ final user = FirebaseAuth.instance.currentUser!;
                     
                     ElevatedButton(
                         onPressed: () {
-                          sendNotification();
+                          createTransaction();
                           //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                           // This is where the purchase will be truly confirmed. Send email to other user notifying
                         }, // route to account page

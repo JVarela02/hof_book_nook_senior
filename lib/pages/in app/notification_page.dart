@@ -168,6 +168,16 @@ class _NotificationPageState extends State<NotificationPage> {
                       ],
                     ),
                   ),
+                  ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return NotificationPage();
+                    }));
+                  }, // route to account page
+                  child: Text('Notifications'),
+                ),
                 ],
               ),
             ),
@@ -182,7 +192,8 @@ class _NotificationPageState extends State<NotificationPage> {
                     itemCount: myNotificationRefernces.length,
                     itemBuilder: ((context, index) {
                       if (myNotificationRefernces.isNotEmpty) {
-                        return ListTile(
+                        return 
+                        ListTile(
                           title: GetSeller(
                             newSeller: myNotificationRefernces[index],
                           ),

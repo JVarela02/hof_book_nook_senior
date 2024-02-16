@@ -414,6 +414,8 @@ class _ResultsPageState extends State<ResultsPage> {
       await FirebaseFirestore.instance
           .collection('textbooks')
           .where('ISBN', isEqualTo: widget.searchCriteria.toString())
+          .where('seller', isNotEqualTo: user.email)
+          .where('inNegotiations', isEqualTo: false)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(

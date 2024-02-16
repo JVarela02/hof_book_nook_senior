@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:the_hof_book_nook/read%20data/API_route.dart';
 
 class GetHeader extends StatelessWidget {
   final String newHeader;
@@ -20,7 +19,7 @@ class GetHeader extends StatelessWidget {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           return Text(
-            '${data['Header']} ',
+            '${data['header']} ',
           );
         }
         return Text('Loading ...');
@@ -47,7 +46,7 @@ class GetRecipient extends StatelessWidget {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           return Text(
-            '${data['Recipient']} ',
+            '${data['recipient']} ',
           );
         }
         return Text('Loading ...');
@@ -74,7 +73,7 @@ class GetSeller extends StatelessWidget {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
           return Text(
-            '${data['Seller']} ',
+            '${data['sender']} ',
           );
         }
         return Text('Loading ...');
@@ -92,7 +91,7 @@ class GetMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     //get the collection
     CollectionReference notifications =
-        FirebaseFirestore.instance.collection('notification');
+        FirebaseFirestore.instance.collection('notifications');
 
     return FutureBuilder<DocumentSnapshot>(
       future: notifications.doc(newMessage).get(),
@@ -100,9 +99,9 @@ class GetMessage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
-          return //Text(
-              Image.network('${data['Message']} '); //,
-          //);
+          return Text(
+            '${data['message']} ',
+          );
         }
         return Text('Loading ...');
       }),

@@ -138,6 +138,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
     });
     sendNotification(code);
     emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+    await getReferenceIDs();
     final saleDocument = FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference);
     saleDocument.update({'InNegotiations': true,});
   }

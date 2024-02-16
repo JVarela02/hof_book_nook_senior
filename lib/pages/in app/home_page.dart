@@ -413,9 +413,9 @@ class _ResultsPageState extends State<ResultsPage> {
     if (widget.dropdownValue == "ISBN") {
       await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('ISBN', isEqualTo: widget.searchCriteria.toString())
-          .where('seller', isNotEqualTo: user.email)
-          .where('inNegotiations', isEqualTo: false)
+          .where('ISBN', isEqualTo: widget.searchCriteria.trim().toString())
+          .where('Seller', isNotEqualTo: user.email)
+          .where('InNegotiations', isEqualTo: false)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
@@ -430,6 +430,8 @@ class _ResultsPageState extends State<ResultsPage> {
       await FirebaseFirestore.instance
           .collection('textbooks')
           .where('Author', isEqualTo: widget.searchCriteria.toString())
+          .where('Seller', isNotEqualTo: user.email)
+          .where('InNegotiations', isEqualTo: false)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
@@ -441,8 +443,11 @@ class _ResultsPageState extends State<ResultsPage> {
           );
     }
     if (widget.dropdownValue == "Title") {
+      print(user.email);
       await FirebaseFirestore.instance
           .collection('textbooks')
+          .where('InNegotiations', isEqualTo: false)
+          //.where('Seller', isEqualTo: user.email)
           .where('Title', isEqualTo: widget.searchCriteria.toString())
           .get()
           .then(

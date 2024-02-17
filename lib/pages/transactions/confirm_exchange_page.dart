@@ -182,6 +182,15 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
 
     sendNotification(code);
     emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    // Navigator.push(context,
+    //   MaterialPageRoute(builder: (BuildContext context) {
+    //   return HomePage();
+    //   }));
+    
   }
 
 

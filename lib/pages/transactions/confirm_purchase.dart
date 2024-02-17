@@ -59,7 +59,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
   Future getReferenceIDs() async {
     await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('ISBN', isEqualTo: forSaleBook)
+          .where('ISBN', isEqualTo: forSaleBook['ISBN'])
           .where('Seller', isEqualTo: sellerEmail)
           .get()
           .then(
@@ -141,6 +141,14 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
     await getReferenceIDs();
     final saleDocument = FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference);
     saleDocument.update({'InNegotiations': true,});
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    // Navigator.push(context,
+    //   MaterialPageRoute(builder: (BuildContext context) {
+    //   return HomePage();
+    // }));
   }
 
 

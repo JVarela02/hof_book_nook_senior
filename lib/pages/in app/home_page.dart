@@ -414,7 +414,7 @@ class _ResultsPageState extends State<ResultsPage> {
       await FirebaseFirestore.instance
           .collection('textbooks')
           .where('ISBN', isEqualTo: widget.searchCriteria.trim().toString())
-          .where('Seller', isNotEqualTo: user.email)
+          //.where('Seller', isNotEqualTo: user.email)
           .where('InNegotiations', isEqualTo: false)
           .get()
           .then(
@@ -430,7 +430,7 @@ class _ResultsPageState extends State<ResultsPage> {
       await FirebaseFirestore.instance
           .collection('textbooks')
           .where('Author', isEqualTo: widget.searchCriteria.toString())
-          .where('Seller', isNotEqualTo: user.email)
+          //.where('Seller', isNotEqualTo: user.email)
           .where('InNegotiations', isEqualTo: false)
           .get()
           .then(
@@ -493,7 +493,7 @@ class _ResultsPageState extends State<ResultsPage> {
                   trailing: GetPrice(priceForSale: searchRefernces[index]),
                   onTap: () => {
                     showDialogBox(searchRefernces[index])
-                  }, // Will be used for "In Negotiations" if done
+                  }, 
                 );
               } else {
                 print("No Results found" + searchRefernces[index]);

@@ -7,6 +7,7 @@ import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -21,6 +22,22 @@ class _NotificationPageState extends State<NotificationPage> {
 
   List<String> myNotificationRefernces = [];
   List<String> myTransactionRefernces = [];
+
+  
+  whereTo(var transaction){
+    print('in whereTo');
+    var getStatus = transaction['status'];
+    print('Status of transaction is ' + getStatus);
+    if(getStatus == "offer"){
+      Navigator.push(context,
+       MaterialPageRoute(
+         builder: (context) {
+         return OfferReceivedPage(transaction); },
+       ),
+     );
+    }
+    // 
+  }
 
   //get textbooks
   Future getNotifications() async {
@@ -39,17 +56,18 @@ class _NotificationPageState extends State<NotificationPage> {
         );
   }
 
-  Future getTransactions() async {
+  var myTransactionRefernce = "";
+  Future getTransactions(var id_num) async {
+    print("in get Transactions");
     await FirebaseFirestore.instance
         .collection('transactions')
-        .where('seller_email', isEqualTo: user.email)
+        .where('transaction_ID', isEqualTo: id_num)
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
               print(document.reference.id);
-              myTransactionRefernces.add(document.reference.id);
-              print(myTransactionRefernces);
+              myTransactionRefernce = document.reference.id;
             },
           ),
         );
@@ -93,18 +111,30 @@ class _NotificationPageState extends State<NotificationPage> {
                 //If notification is about support message sent(?), send to that UI
                 //etc etc etc for any other notifications
                 onPressed: () async {
-                  final document = FirebaseFirestore.instance
-                      .collection('notifications')
-                      .doc(index);
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return NotificationPage();
-                      },
-                    ),
-                  );
+                  print("Getting Notification");
+                  final document = FirebaseFirestore.instance.collection('notifications').doc(index);
+                  var queryNotificationSnapshot = await document.get();
+                  Map<String, dynamic> notifData = queryNotificationSnapshot.data()!;
+                  var transaction_ID = notifData['transaction_ID'];
+                  print("Got transaction id from notifications its " + transaction_ID.toString());
+
+                  await getTransactions(transaction_ID);
+                  print("got transaction reference ID its " + myTransactionRefernce);
+                  final document2 = FirebaseFirestore.instance.collection('transactions').doc(myTransactionRefernce);
+                  var queryTransactionSnapshot = await document2.get();
+                  Map<String, dynamic> transactionData = queryTransactionSnapshot.data()!;
+
+                  whereTo(transactionData);
+
+                  // Navigator.popUntil(context, (route) => false);
+                  // Navigator.push(context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //     return NotificationPage(); },
+                  //   ),
+                  // );
+                
+
                 },
                 child: Text('View Full Message'),
               ),
@@ -157,108 +187,108 @@ class _NotificationPageState extends State<NotificationPage> {
       ),
       body: Center(
         child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: ButtonBar(
-                alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize
-                    .min, // this will take space as minimum as posible(to center)
-                children: <Widget>[
-                  ElevatedButton(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize
+                      .min, // this will take space as minimum as posible(to center)
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return HomePage();
+                        }));
+                      }, // route to account page
+                      child: Text(
+                        'Home',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return MyListingsPage();
+                        }));
+                      }, // route to my page ... this page ...
+                      child: Column(
+                        children: [
+                          Text('My'),
+                          Text('Listings'),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return accountPage();
+                        }));
+                      },
+                      child: Column(
+                        children: [
+                          Text('My'),
+                          Text('Account'),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                        return HomePage();
+                        return NotificationPage();
                       }));
                     }, // route to account page
-                    child: Text(
-                      'Home',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    child: Text('Notifications'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return MyListingsPage();
-                      }));
-                    }, // route to my page ... this page ...
-                    child: Column(
-                      children: [
-                        Text('My'),
-                        Text('Listings'),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return accountPage();
-                      }));
-                    },
-                    child: Column(
-                      children: [
-                        Text('My'),
-                        Text('Account'),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return NotificationPage();
-                    }));
-                  }, // route to account page
-                  child: Text('Notifications'),
+                  ],
                 ),
-                ],
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: getNotifications(),
-                builder: (context, snapshot) {
-                  return ListView.builder(
-                    itemCount: myNotificationRefernces.length,
-                    itemBuilder: ((context, index) {
-                      if (myNotificationRefernces.isNotEmpty) {
-                        
-                        return ListTile(
-                          leading: GetRead(
-                            readIcon: myNotificationRefernces[index],
-                          ),
-                          title: GetHeader(
-                            newHeader: myNotificationRefernces[index],
-                          ),
-                          subtitle: GetMessage(
-                            newMessage: myNotificationRefernces[index],
-                          ),
-                          trailing: Icon(
-                            Icons.square_outlined,
-                          ),
-                          onTap: () => showDialogBox(myNotificationRefernces[
-                              index]), // Will be used for "In Negotiations" if done
-                        );
-                      } else {
-                        return SizedBox(height: 20);
-                      }
-                    }),
-                  );
-                },
+              SizedBox(
+                height: 10,
               ),
-            ),
-          ],
-        ),
+              Expanded(
+                child: FutureBuilder(
+                  future: getNotifications(),
+                  builder: (context, snapshot) {
+                    return ListView.builder(
+                      itemCount: myNotificationRefernces.length,
+                      itemBuilder: ((context, index) {
+                        if (myNotificationRefernces.isNotEmpty) {
+                          
+                          return ListTile(
+                            leading: GetRead(
+                              readIcon: myNotificationRefernces[index],
+                            ),
+                            title: GetHeader(
+                              newHeader: myNotificationRefernces[index],
+                            ),
+                            subtitle: GetMessage(
+                              newMessage: myNotificationRefernces[index],
+                            ),
+                            trailing: Icon(
+                              Icons.square_outlined,
+                            ),
+                            onTap: () => showDialogBox(myNotificationRefernces[
+                                index]), 
+                          );
+                        } else {
+                          return SizedBox(height: 20);
+                        }
+                      }),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
       ),
     );
   }

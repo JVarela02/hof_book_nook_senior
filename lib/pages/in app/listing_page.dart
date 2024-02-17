@@ -38,7 +38,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
         );
   }
 
-  void showDialogBox(String index) async {
+  /*void showDialogBox(String index) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -96,6 +96,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
       },
     );
   }
+  */
 
 
   @override
@@ -233,8 +234,7 @@ class _MyListingsPageState extends State<MyListingsPage> {
                           trailing: Icon(
                             Icons.square_outlined,
                           ),
-                          onTap: () => showDialogBox(myListingRefernces[
-                              index]), // Will be used for "In Negotiations" if done
+                          // onTap: () => showDialogBox(myListingRefernces[index]), // Will be used for "In Negotiations" if done // Update 2024: we no longer want users to manually switch this status
                         );
                       } else {
                         return SizedBox(height: 20);

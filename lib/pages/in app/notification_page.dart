@@ -20,6 +20,7 @@ class _NotificationPageState extends State<NotificationPage> {
   final user = FirebaseAuth.instance.currentUser!;
 
   List<String> myNotificationRefernces = [];
+  List<String> myTransactionRefernces = [];
 
   //get textbooks
   Future getNotifications() async {
@@ -38,13 +39,29 @@ class _NotificationPageState extends State<NotificationPage> {
         );
   }
 
+  Future getTransactions() async {
+    await FirebaseFirestore.instance
+        .collection('transactions')
+        .where('seller_email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(document.reference.id);
+              myTransactionRefernces.add(document.reference.id);
+              print(myTransactionRefernces);
+            },
+          ),
+        );
+  }
+
   void showDialogBox(String index) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Expanded(
           child: AlertDialog(
-            title: Text('Read'),
+            title: Text('Notifications'),
             content: Text('Would you like to mark this as read?'),
             actions: [
               TextButton(
@@ -67,6 +84,29 @@ class _NotificationPageState extends State<NotificationPage> {
                   );
                 },
                 child: Text('Mark as Read'),
+              ),
+              TextButton(
+                //Add another text box here BAM view notification content
+                //If notification is about book exchange, send to Exchange UI
+                //If notification is about book purchase, send to Purchase UI
+                //If notification is about counter offer, send to Counter UI
+                //If notification is about support message sent(?), send to that UI
+                //etc etc etc for any other notifications
+                onPressed: () async {
+                  final document = FirebaseFirestore.instance
+                      .collection('notifications')
+                      .doc(index);
+                  Navigator.popUntil(context, (route) => false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return NotificationPage();
+                      },
+                    ),
+                  );
+                },
+                child: Text('View Full Message'),
               ),
             ],
           ),
@@ -183,11 +223,17 @@ class _NotificationPageState extends State<NotificationPage> {
                     itemBuilder: ((context, index) {
                       if (myNotificationRefernces.isNotEmpty) {
                         return ListTile(
-                          title: GetSeller(
-                            newSeller: myNotificationRefernces[index],
+                          leading: GetRead(
+                            readIcon: myNotificationRefernces[index],
+                          ),
+                          title: GetHeader(
+                            newHeader: myNotificationRefernces[index],
                           ),
                           subtitle: GetMessage(
                             newMessage: myNotificationRefernces[index],
+                          ),
+                          trailing: Icon(
+                            Icons.square_outlined,
                           ),
                           onTap: () => showDialogBox(myNotificationRefernces[
                               index]), // Will be used for "In Negotiations" if done

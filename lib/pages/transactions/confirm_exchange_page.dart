@@ -53,7 +53,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   }
 
   Future codeGenerator() async {
-    int code = Random().nextInt(8999999999) + 1000000000; 
+    int code = Random().nextInt(899999) + 100000; 
     bool unique = await confirmUniqueCode(code);
     if(unique == true){return code;}
     else{codeGenerator();}
@@ -65,31 +65,35 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   Future getReferenceIDs() async {
     await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('ISBN', isEqualTo: forSaleBook)
+          .where('ISBN', isEqualTo: forSaleBook['ISBN'])
           .where('Seller', isEqualTo: sellerEmail)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
               (document) {
-                //print(document.reference.id);
+                print(document.reference.id);
                 forSaleReference = document.reference.id;
               },
             ),
           );
 
+      print("for sale reference ID is " + forSaleReference);
+
       await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('ISBN', isEqualTo: forSaleBook)
+          .where('ISBN', isEqualTo: exchangeBook['ISBN'])
           .where('Seller', isEqualTo: buyerEmail)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
               (document) {
-                //print(document.reference.id);
+                print(document.reference.id);
                 forExchangeReference = document.reference.id;
               },
             ),
           );
+
+      print("for exchange reference ID is " + forExchangeReference);
   }
 
 
@@ -170,6 +174,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale 
+    await getReferenceIDs();
     final saleDocument = FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference);
     saleDocument.update({'InNegotiations': true,});
     final exchangeDocument = FirebaseFirestore.instance.collection('textbooks').doc(forExchangeReference);
@@ -177,6 +182,15 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
 
     sendNotification(code);
     emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
+    // Navigator.push(context,
+    //   MaterialPageRoute(builder: (BuildContext context) {
+    //   return HomePage();
+    //   }));
+    
   }
 
 

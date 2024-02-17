@@ -108,3 +108,59 @@ class GetMessage extends StatelessWidget {
     );
   }
 }
+
+class GetRead extends StatelessWidget {
+  final String readIcon;
+
+  GetRead({required this.readIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    //get the collection
+    CollectionReference notifications =
+        FirebaseFirestore.instance.collection('notifications');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: notifications.doc(readIcon).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          if ('${data['read']}' == 'true') {
+            return Text(' ');
+          } else {
+            return Icon(Icons.circle);
+          }
+        }
+        return Text('Loading ...');
+      }),
+    );
+  }
+}
+
+class GetStatus extends StatelessWidget {
+  final String newStatus;
+
+  GetStatus({required this.newStatus});
+
+  @override
+  Widget build(BuildContext context) {
+    //get the collection
+    CollectionReference transactions =
+        FirebaseFirestore.instance.collection('transactions');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: transactions.doc(newStatus).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text(
+            '${data['status']} ',
+          );
+        }
+        return Text('Loading ...');
+      }),
+    );
+  }
+}

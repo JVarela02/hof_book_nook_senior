@@ -33,6 +33,7 @@ class _PurchasePageState extends State<PurchasePage> {
     await FirebaseFirestore.instance
           .collection('textbooks')
           .where('Seller', isEqualTo: user.email)
+          .where('inNegotiations', isEqualTo: false)
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(

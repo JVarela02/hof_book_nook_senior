@@ -8,15 +8,15 @@ import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 
 
 class OfferReceivedPage extends StatefulWidget {
-  final String dbTrasactionReference;
-  const OfferReceivedPage(this.dbTrasactionReference);
+  final Map<String,dynamic> transactionData;
+  const OfferReceivedPage(this.transactionData);
   @override
-  State<OfferReceivedPage> createState() => OfferReceivedPageState(this.dbTrasactionReference);
+  State<OfferReceivedPage> createState() => OfferReceivedPageState(this.transactionData);
 }
 
 class OfferReceivedPageState extends State<OfferReceivedPage> {
-  final String dbTrasactionReference;
-  OfferReceivedPageState(this.dbTrasactionReference);
+  final Map<String,dynamic> transactionData;
+  OfferReceivedPageState(this.transactionData);
 
 
 
@@ -41,7 +41,8 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 child: Expanded(
                   child: Column(
                     children: [
-                      
+                      Text("seller is " + transactionData['Seller']),
+                      Text("Buyer is " + transactionData['Buyer'])
                     ]
                   ),
                 ),

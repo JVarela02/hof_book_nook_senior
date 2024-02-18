@@ -175,7 +175,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
                       Row(
                       children: [
                         Image.network(forSaleBook['Cover'],
-                        scale: 0.7,),
+                        scale: 1,),
                     
                         SizedBox(width: 20),
                           

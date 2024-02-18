@@ -367,7 +367,7 @@ class _ResultsPageState extends State<ResultsPage> {
               child: Column(
                 children: [
                   Image.network(link),
-                  Text(detailDescription + '\n \nInterested in this book? Email the seller of this book!'),
+                  Text(detailDescription),
                 ],
               ),
             ),

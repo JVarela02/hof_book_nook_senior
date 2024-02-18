@@ -259,7 +259,7 @@ class _PurchasePageState extends State<PurchasePage> {
                     Row(
                       children: [
                         Image.network(itemID['Cover'],
-                        scale: 0.7,),
+                        scale: 1,),
                     
                         SizedBox(width: 20),
                           

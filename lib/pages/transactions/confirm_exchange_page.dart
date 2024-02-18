@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
+// import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:the_hof_book_nook/repeated_functions.dart';
 
 
 class ConfirmExchangePage extends StatefulWidget {
@@ -128,7 +129,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   }
 
 
-  Future sendNotification(int transaction_ID) async {
+  /* Future sendNotification(int transaction_ID) async {
     final notification = <String, dynamic> {
       "header" : buyerName+ " wants to make a exchange for your book!",
       "message" : buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"],
@@ -139,7 +140,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     };
     var db = FirebaseFirestore.instance;
     db.collection("notifications").doc().set(notification);
-  }
+  } */
 
   Future createTransaction() async{
     int code = await codeGenerator();
@@ -180,7 +181,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     final exchangeDocument = FirebaseFirestore.instance.collection('textbooks').doc(forExchangeReference);
     exchangeDocument.update({'InNegotiations': true,});
 
-    sendNotification(code);
+    sendNotification(code,buyerName+ " wants to make a exchange for your book!",buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"], sellerEmail,buyerEmail);
     emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -217,7 +218,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                       Row(
                       children: [
                         Image.network(forSaleBook['Cover'],
-                        scale: 0.7,),
+                        scale: 1,),
                     
                         SizedBox(width: 20),
                           
@@ -261,7 +262,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                     Row(
                       children: [
                         Image.network(exchangeBook['Cover'],
-                        scale: 0.7,),
+                        scale: 1,),
                     
                         SizedBox(width: 20),
                           

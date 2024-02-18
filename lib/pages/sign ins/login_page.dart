@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/auth/auth_code_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+//import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 //import '../../main.dart';
 import 'forgot_pw_page.dart';
 import 'dart:math';
@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
 
 
     // email user 
-    //emailAuth(name: user_name, code: authcode, email:loggedemail);
+    emailAuth(name: user_name, code: authcode, email:loggedemail);
 
     }
 
@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
           password: _passwordController.text.trim()
           );
         codeGenerator(_loginController.text.trim());
-        } on Exception catch (e) {
+        } on Exception {
         showDialog(context: context, builder: (context){
               return const AlertDialog(
                 content: Text("No matching email and password was found"),
@@ -150,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
               password: _passwordController.text.trim()
               );
             codeGenerator(emailLogin);
-            } on Exception catch (e) {
+            } on Exception {
             showDialog(context: context, builder: (context){
                   return const AlertDialog(
                     content: Text("No matching email and password was found"),

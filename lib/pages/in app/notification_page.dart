@@ -24,7 +24,7 @@ class _NotificationPageState extends State<NotificationPage> {
   List<String> myTransactionRefernces = [];
 
   
-  whereTo(var transaction){
+  whereTo(var transaction, transaction_reference, notification_reference){
     print('in whereTo');
     var getStatus = transaction['status'];
     print('Status of transaction is ' + getStatus);
@@ -32,7 +32,7 @@ class _NotificationPageState extends State<NotificationPage> {
       Navigator.push(context,
        MaterialPageRoute(
          builder: (context) {
-         return OfferReceivedPage(transaction); },
+         return OfferReceivedPage(transaction, transaction_reference, notification_reference); },
        ),
      );
     }
@@ -124,7 +124,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   var queryTransactionSnapshot = await document2.get();
                   Map<String, dynamic> transactionData = queryTransactionSnapshot.data()!;
 
-                  whereTo(transactionData);
+                  whereTo(transactionData, myTransactionRefernce, index);
 
                   // Navigator.popUntil(context, (route) => false);
                   // Navigator.push(context,

@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/remove_wishlist.dart';
 import 'package:the_hof_book_nook/pages/in%20app/add_wishlist.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
@@ -79,71 +79,74 @@ class _WishlistPageState extends State<WishlistPage> {
           )
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          //ListView(children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: ButtonBar(
-              alignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize
-                  .min, // this will take space as minimum as posible(to center)
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return RemoveTextbookFromWishlistPage();
-                    }));
-                  }, // "route" to home page
-                  child: Text('Delete from Wishlist'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return WishlistTextbookInputPage();
-                    }));
-                  }, // route to account page
-                  child: Text('Add to Wishlist'),
-                ),
-              ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //ListView(children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize
+                    .min, // this will take space as minimum as posible(to center)
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return RemoveTextbookFromWishlistPage();
+                      }));
+                    }, // "route" to home page
+                    child: Text('Delete from Wishlist'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return WishlistTextbookInputPage();
+                      }));
+                    }, // route to account page
+                    child: Text('Add to Wishlist'),
+                  ),
+                ],
+              ),
             ),
-          ),
-          //],),
-
-          SizedBox(
-            height: 10,
-          ),
-
-          Expanded(
-            child: FutureBuilder(
-              future: getTextbooks(),
-              builder: (context, snapshot) {
-                return ListView.builder(
-                  itemCount: wishlistRefernces.length,
-                  itemBuilder: ((context, index) {
-                    if (wishlistRefernces.isNotEmpty) {
-                      return ListTile(
-                        leading: GetCover(
-                          coverForSale: wishlistRefernces[index],
-                        ), // This will turn into photo of textbook
-                        title: GetTitle(
-                          titleForSale: wishlistRefernces[index],
-                        ),
-                      );
-                    } else {
-                      return SizedBox(height: 20);
-                    }
-                  }),
-                );
-              },
+            //],),
+      
+            SizedBox(
+              height: 10,
             ),
-          ),
-        ],
+      
+            Expanded(
+              child: FutureBuilder(
+                future: getTextbooks(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    itemCount: wishlistRefernces.length,
+                    itemBuilder: ((context, index) {
+                      if (wishlistRefernces.isNotEmpty) {
+                        return ListTile(
+                          leading: GetCover(
+                            coverForSale: wishlistRefernces[index],
+                          ), // This will turn into photo of textbook
+                          title: GetTitle(
+                            titleForSale: wishlistRefernces[index],
+                          ),
+                          subtitle: Text("    ")
+                        );
+                      } else {
+                        return SizedBox(height: 20);
+                      }
+                    }),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

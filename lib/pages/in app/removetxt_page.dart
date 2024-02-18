@@ -26,6 +26,7 @@ class _RemoveTextbookPageState extends State<RemoveTextbookPage> {
     await FirebaseFirestore.instance
         .collection('textbooks')
         .where('Seller', isEqualTo: user.email)
+        .where('InNegotiations', isEqualTo: false)
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(

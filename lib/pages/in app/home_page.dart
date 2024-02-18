@@ -322,7 +322,7 @@ class _ResultsPageState extends State<ResultsPage> {
   }
 
   Future showDialogBox(String index) async {
-    var collection = FirebaseFirestore.instance
+    /*var collection = FirebaseFirestore.instance
         .collection('users')
         .where('email', isEqualTo: user.email);
     var querySnapshot = await collection.get();
@@ -342,19 +342,19 @@ class _ResultsPageState extends State<ResultsPage> {
     Map<String, dynamic> data = querySellerSnapshot.data()!;
     String FullEmail = data['Seller'];
     SellerEmail = FullEmail;
-    print(FullEmail);
+    print(FullEmail); */
 
-    var namecollection =
+    var sellcollection =
         FirebaseFirestore.instance.collection('textbooks').doc(index);
-    var queryNameSnapshot = await namecollection.get();
-    var txtName = "";
+    var querySellerSnapshot = await sellcollection.get();
+    //var txtName;
     Map<String, dynamic> data2 = querySellerSnapshot.data()!;
     String textbookName = data2['Title'];
-    txtName = textbookName;
+    //String txtName = textbookName;
     String txtAuthorName = data2['Title'] + " By: " + data2['Author'];
     String detailDescription = data2['Description'];
     String link = data2['Cover'];
-    print(textbookName);
+    print(textbookName); 
 
     showDialog(
       context: context,
@@ -387,13 +387,13 @@ class _ResultsPageState extends State<ResultsPage> {
                   Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
                       return PurchasePage(data2);}));
-                  // await getUsers();
-                  // sendEmail(
-                  //     name: finalName, //current user name
-                  //     email: user.email.toString(), // user's email address
-                  //     textbook: txtName, //when api is implemented
-                  //     selleremail: SellerEmail); // seller's email address
-                  // Navigator.of(context).pop();
+                   /*await getUsers();
+                   sendEmail(
+                       name: finalName, //current user name
+                       email: user.email.toString(), // user's email address
+                       textbook: txtName, //when api is implemented
+                       selleremail: SellerEmail); // seller's email address
+                   Navigator.of(context).pop();*/
                 },
                 child: Text('Purchase'),
               ),

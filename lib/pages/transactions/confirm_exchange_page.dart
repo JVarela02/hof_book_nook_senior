@@ -10,7 +10,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:the_hof_book_nook/repeated_functions.dart';
 
-
 class ConfirmExchangePage extends StatefulWidget {
   final Map<String, dynamic> forSaleBook;
   final Map<String, dynamic> exchangeBook;
@@ -19,45 +18,65 @@ class ConfirmExchangePage extends StatefulWidget {
   final String priceDifference;
   final String sellerEmail;
   final String buyerEmail;
-  const ConfirmExchangePage(this.forSaleBook, this.exchangeBook, this.sellerName, this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
+  const ConfirmExchangePage(
+      this.forSaleBook,
+      this.exchangeBook,
+      this.sellerName,
+      this.buyerName,
+      this.priceDifference,
+      this.sellerEmail,
+      this.buyerEmail);
   @override
-  State<ConfirmExchangePage> createState() => ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName, this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
+  State<ConfirmExchangePage> createState() => ConfirmExchangePageState(
+      this.forSaleBook,
+      this.exchangeBook,
+      this.sellerName,
+      this.buyerName,
+      this.priceDifference,
+      this.sellerEmail,
+      this.buyerEmail);
 }
 
 class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   Map<String, dynamic> forSaleBook;
-    Map<String, dynamic> exchangeBook;
-    String sellerName;
-    String buyerName;
-    String priceDifference;
-    String sellerEmail;
-    String buyerEmail;
-  ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName, this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
-
+  Map<String, dynamic> exchangeBook;
+  String sellerName;
+  String buyerName;
+  String priceDifference;
+  String sellerEmail;
+  String buyerEmail;
+  ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName,
+      this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
   Future confirmUniqueCode(int code) async {
-    List<dynamic> references = [];  
+    List<dynamic> references = [];
     await FirebaseFirestore.instance
-          .collection('transactions')
-          .where('transaction_ID', isEqualTo: code)
-          .get()
-          .then(
-            (snapshot) => snapshot.docs.forEach(
-              (document) {
-                //print(document.reference.id);
-                references.add(document.reference.id);
-              },
-            ),
-          );
-    if(references.length > 1){return false;}
-    else{return true;}
+        .collection('transactions')
+        .where('transaction_ID', isEqualTo: code)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              references.add(document.reference.id);
+            },
+          ),
+        );
+    if (references.length > 1) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   Future codeGenerator() async {
-    int code = Random().nextInt(899999) + 100000; 
+    int code = Random().nextInt(899999) + 100000;
     bool unique = await confirmUniqueCode(code);
-    if(unique == true){return code;}
-    else{codeGenerator();}
+    if (unique == true) {
+      return code;
+    } else {
+      codeGenerator();
+    }
     // print(code);
   }
 
@@ -65,38 +84,37 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   var forExchangeReference = "";
   Future getReferenceIDs() async {
     await FirebaseFirestore.instance
-          .collection('textbooks')
-          .where('ISBN', isEqualTo: forSaleBook['ISBN'])
-          .where('Seller', isEqualTo: sellerEmail)
-          .get()
-          .then(
-            (snapshot) => snapshot.docs.forEach(
-              (document) {
-                print(document.reference.id);
-                forSaleReference = document.reference.id;
-              },
-            ),
-          );
+        .collection('textbooks')
+        .where('ISBN', isEqualTo: forSaleBook['ISBN'])
+        .where('Seller', isEqualTo: sellerEmail)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(document.reference.id);
+              forSaleReference = document.reference.id;
+            },
+          ),
+        );
 
-      print("for sale reference ID is " + forSaleReference);
+    print("for sale reference ID is " + forSaleReference);
 
-      await FirebaseFirestore.instance
-          .collection('textbooks')
-          .where('ISBN', isEqualTo: exchangeBook['ISBN'])
-          .where('Seller', isEqualTo: buyerEmail)
-          .get()
-          .then(
-            (snapshot) => snapshot.docs.forEach(
-              (document) {
-                print(document.reference.id);
-                forExchangeReference = document.reference.id;
-              },
-            ),
-          );
+    await FirebaseFirestore.instance
+        .collection('textbooks')
+        .where('ISBN', isEqualTo: exchangeBook['ISBN'])
+        .where('Seller', isEqualTo: buyerEmail)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(document.reference.id);
+              forExchangeReference = document.reference.id;
+            },
+          ),
+        );
 
-      print("for exchange reference ID is " + forExchangeReference);
+    print("for exchange reference ID is " + forExchangeReference);
   }
-
 
   Future emailSeller({
     required String user_name,
@@ -120,13 +138,14 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'user_id': userId,
         'template_params': {
           'user_name': user_name,
-          'seller_email' : seller_email,
+          'seller_email': seller_email,
           'textbook_name': textbook_name,
         }
       }),
     );
     print(response.body);
   }
+
 
 
   /* Future sendNotification(int transaction_ID) async {
@@ -137,52 +156,63 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       "recipient" : sellerEmail,
       "sender" : buyerEmail,
       "transaction_ID" : transaction_ID
+
     };
     var db = FirebaseFirestore.instance;
     db.collection("notifications").doc().set(notification);
   } */
 
-  Future createTransaction() async{
+  Future createTransaction() async {
     int code = await codeGenerator();
     await FirebaseFirestore.instance.collection("transactions").add({
-      'seller' : sellerName,
-      'seller_email' : sellerEmail,
-      'buyer' : buyerName,
-      'buyer_email' : buyerEmail,
-      'forSale' : {
-        'Author' : forSaleBook['Author'],
-        'Condition' : forSaleBook['Condition'],
-        'Cover' : forSaleBook['Cover'],
-        'Description' : forSaleBook['Description'],
-        'ISBN' : forSaleBook['ISBN'],
-        'Price' : forSaleBook['Price'],
-        'Title' : forSaleBook['Title'],
-        'Seller' : forSaleBook['Seller'],
+      'seller': sellerName,
+      'seller_email': sellerEmail,
+      'buyer': buyerName,
+      'buyer_email': buyerEmail,
+      'forSale': {
+        'Author': forSaleBook['Author'],
+        'Condition': forSaleBook['Condition'],
+        'Cover': forSaleBook['Cover'],
+        'Description': forSaleBook['Description'],
+        'ISBN': forSaleBook['ISBN'],
+        'Price': forSaleBook['Price'],
+        'Title': forSaleBook['Title'],
+        'Seller': forSaleBook['Seller'],
       },
-      'forExchange' : {
-        'Author' : exchangeBook['Author'],
-        'Condition' : exchangeBook['Condition'],
-        'Cover' : exchangeBook['Cover'],
-        'Description' : exchangeBook['Description'],
-        'ISBN' : exchangeBook['ISBN'],
-        'Price' : exchangeBook['Price'],
-        'Title' : exchangeBook['Title'],
-        'Seller' : exchangeBook['Seller'],
+      'forExchange': {
+        'Author': exchangeBook['Author'],
+        'Condition': exchangeBook['Condition'],
+        'Cover': exchangeBook['Cover'],
+        'Description': exchangeBook['Description'],
+        'ISBN': exchangeBook['ISBN'],
+        'Price': exchangeBook['Price'],
+        'Title': exchangeBook['Title'],
+        'Seller': exchangeBook['Seller'],
       },
-      'remainder' : priceDifference,
-      'status' : "offer",
-      'transaction_ID' : code
+      'remainder': priceDifference,
+      'status': "offer",
+      'transaction_ID': code
     });
 
-    // Set textbooks as in negotiations so it doesn't appear as available for sale 
+    // Set textbooks as in negotiations so it doesn't appear as available for sale
     await getReferenceIDs();
-    final saleDocument = FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference);
-    saleDocument.update({'InNegotiations': true,});
-    final exchangeDocument = FirebaseFirestore.instance.collection('textbooks').doc(forExchangeReference);
-    exchangeDocument.update({'InNegotiations': true,});
+    final saleDocument = FirebaseFirestore.instance
+        .collection('textbooks')
+        .doc(forSaleReference);
+    saleDocument.update({
+      'InNegotiations': true,
+    });
+    final exchangeDocument = FirebaseFirestore.instance
+        .collection('textbooks')
+        .doc(forExchangeReference);
+    exchangeDocument.update({
+      'InNegotiations': true,
+    });
 
-    sendNotification(code,buyerName+ " wants to make a exchange for your book!",buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"], sellerEmail,buyerEmail);
+
+    sendNotification(code,buyerName + " wants to make a exchange for your book! Please confirm or deny exchange!", buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"], sellerEmail,buyerEmail);
     emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+
     Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -191,19 +221,18 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     //   MaterialPageRoute(builder: (BuildContext context) {
     //   return HomePage();
     //   }));
-    
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const FittedBox(
-          child: Padding(
-            padding: EdgeInsets.only(left: 1.0),
-            child: Align(
-                alignment: Alignment.centerLeft, child: Text("Purchase")),
+        appBar: AppBar(
+          title: const FittedBox(
+            child: Padding(
+              padding: EdgeInsets.only(left: 1.0),
+              child: Align(
+                  alignment: Alignment.centerLeft, child: Text("Purchase")),
+            ),
           ),
         ),
       ),
@@ -255,10 +284,24 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                                      ),),
                                   ),
                                 ],
+
                               ),
-                        ),
-                      ],
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Price: " + forSaleBook['Price'] + " credits",
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+
                     Row(
                       children: [
                         Image.network(exchangeBook['Cover'],
@@ -299,24 +342,40 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                                      ),),
                                   ),
                                 ],
-                              ),
-                        ),
-                      ],
-                    ),
 
-                    SizedBox(height: 15,),
-                    
-                    ElevatedButton(
-                        onPressed: () {
-                          createTransaction();
-                          //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
-                          // This is where the purchase will be truly confirmed. Send email to other user notifying
-                        }, // route to account page
-                        child: Text('Send Exchange Offer',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      )
-                      /*Text("Seller is " + sellerName),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Price: " + exchangeBook['Price'] + " credits",
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    createTransaction();
+                    //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
+                    // This is where the purchase will be truly confirmed. Send email to other user notifying
+                  }, // route to account page
+                  child: Text(
+                    'Send Exchange Offer',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                )
+                /*Text("Seller is " + sellerName),
                       SizedBox(height: 5,),
                       Text("Buyer is " + buyerName),
                       SizedBox(height: 5,),
@@ -326,9 +385,9 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                       SizedBox(height: 5,),
                       Text("Exchange book is " + exchangeBook.toString())
                       */
-                    ]
-                  ),
-                ),
+              ]),
             ),
-          )
-      ));}}
+          ),
+        )));
+  }
+}

@@ -164,3 +164,30 @@ class GetStatus extends StatelessWidget {
     );
   }
 }
+
+class GetTransactionID extends StatelessWidget {
+  final String newTID;
+
+  GetTransactionID({required this.newTID});
+
+  @override
+  Widget build(BuildContext context) {
+    //get the collection
+    CollectionReference transactions =
+        FirebaseFirestore.instance.collection('transactions');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: transactions.doc(newTID).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text(
+            '${data['transaction_ID']} ',
+          );
+        }
+        return Text('Loading ...');
+      }),
+    );
+  }
+}

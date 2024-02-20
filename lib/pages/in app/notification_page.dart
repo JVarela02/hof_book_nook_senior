@@ -23,20 +23,24 @@ class _NotificationPageState extends State<NotificationPage> {
   List<String> myNotificationRefernces = [];
   List<String> myTransactionRefernces = [];
 
-  
-  whereTo(var transaction){
+  var currentHeaderReference;
+
+  String whereTo(var transaction) {
     print('in whereTo');
-    var getStatus = transaction['status'];
-    print('Status of transaction is ' + getStatus);
-    if(getStatus == "offer"){
-      Navigator.push(context,
-       MaterialPageRoute(
-         builder: (context) {
-         return OfferReceivedPage(transaction); },
-       ),
-     );
+    var status = transaction['status'];
+    currentHeaderReference = status;
+    print('Status of transaction is ' + status);
+    if (status == "offer") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return OfferReceivedPage(transaction);
+          },
+        ),
+      );
     }
-    // 
+    return currentHeaderReference;
   }
 
   //get textbooks
@@ -112,17 +116,25 @@ class _NotificationPageState extends State<NotificationPage> {
                 //etc etc etc for any other notifications
                 onPressed: () async {
                   print("Getting Notification");
-                  final document = FirebaseFirestore.instance.collection('notifications').doc(index);
+                  final document = FirebaseFirestore.instance
+                      .collection('notifications')
+                      .doc(index);
                   var queryNotificationSnapshot = await document.get();
-                  Map<String, dynamic> notifData = queryNotificationSnapshot.data()!;
+                  Map<String, dynamic> notifData =
+                      queryNotificationSnapshot.data()!;
                   var transaction_ID = notifData['transaction_ID'];
-                  print("Got transaction id from notifications its " + transaction_ID.toString());
+                  print("Got transaction id from notifications its " +
+                      transaction_ID.toString());
 
                   await getTransactions(transaction_ID);
-                  print("got transaction reference ID its " + myTransactionRefernce);
-                  final document2 = FirebaseFirestore.instance.collection('transactions').doc(myTransactionRefernce);
+                  print("got transaction reference ID its " +
+                      myTransactionRefernce);
+                  final document2 = FirebaseFirestore.instance
+                      .collection('transactions')
+                      .doc(myTransactionRefernce);
                   var queryTransactionSnapshot = await document2.get();
-                  Map<String, dynamic> transactionData = queryTransactionSnapshot.data()!;
+                  Map<String, dynamic> transactionData =
+                      queryTransactionSnapshot.data()!;
 
                   whereTo(transactionData);
 
@@ -133,8 +145,6 @@ class _NotificationPageState extends State<NotificationPage> {
                   //     return NotificationPage(); },
                   //   ),
                   // );
-                
-
                 },
                 child: Text('View Full Message'),
               ),
@@ -187,58 +197,58 @@ class _NotificationPageState extends State<NotificationPage> {
       ),
       body: Center(
         child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: ButtonBar(
-                  alignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize
-                      .min, // this will take space as minimum as posible(to center)
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return HomePage();
-                        }));
-                      }, // route to account page
-                      child: Text(
-                        'Home',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: ButtonBar(
+                alignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize
+                    .min, // this will take space as minimum as posible(to center)
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return HomePage();
+                      }));
+                    }, // route to account page
+                    child: Text(
+                      'Home',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return MyListingsPage();
-                        }));
-                      }, // route to my page ... this page ...
-                      child: Column(
-                        children: [
-                          Text('My'),
-                          Text('Listings'),
-                        ],
-                      ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return MyListingsPage();
+                      }));
+                    }, // route to my page ... this page ...
+                    child: Column(
+                      children: [
+                        Text('My'),
+                        Text('Listings'),
+                      ],
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) {
-                          return accountPage();
-                        }));
-                      },
-                      child: Column(
-                        children: [
-                          Text('My'),
-                          Text('Account'),
-                        ],
-                      ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return accountPage();
+                      }));
+                    },
+                    child: Column(
+                      children: [
+                        Text('My'),
+                        Text('Account'),
+                      ],
                     ),
-                    ElevatedButton(
+                  ),
+                  ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.push(context,
@@ -248,47 +258,46 @@ class _NotificationPageState extends State<NotificationPage> {
                     }, // route to account page
                     child: Text('Notifications'),
                   ),
-                  ],
-                ),
+                ],
               ),
-              SizedBox(
-                height: 10,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: FutureBuilder(
+                future: getNotifications(),
+                builder: (context, snapshot) {
+                  return ListView.builder(
+                    itemCount: myNotificationRefernces.length,
+                    itemBuilder: ((context, index) {
+                      if (myNotificationRefernces.isNotEmpty) {
+                        return ListTile(
+                          leading: GetRead(
+                            readIcon: myNotificationRefernces[index],
+                          ),
+                          title: GetHeader(
+                            newHeader: myNotificationRefernces[index],
+                          ),
+                          subtitle: GetMessage(
+                            newMessage: myNotificationRefernces[index],
+                          ),
+                          trailing: Icon(
+                            Icons.square_outlined,
+                          ),
+                          onTap: () =>
+                              showDialogBox(myNotificationRefernces[index]),
+                        );
+                      } else {
+                        return SizedBox(height: 20);
+                      }
+                    }),
+                  );
+                },
               ),
-              Expanded(
-                child: FutureBuilder(
-                  future: getNotifications(),
-                  builder: (context, snapshot) {
-                    return ListView.builder(
-                      itemCount: myNotificationRefernces.length,
-                      itemBuilder: ((context, index) {
-                        if (myNotificationRefernces.isNotEmpty) {
-                          
-                          return ListTile(
-                            leading: GetRead(
-                              readIcon: myNotificationRefernces[index],
-                            ),
-                            title: GetHeader(
-                              newHeader: myNotificationRefernces[index],
-                            ),
-                            subtitle: GetMessage(
-                              newMessage: myNotificationRefernces[index],
-                            ),
-                            trailing: Icon(
-                              Icons.square_outlined,
-                            ),
-                            onTap: () => showDialogBox(myNotificationRefernces[
-                                index]), 
-                          );
-                        } else {
-                          return SizedBox(height: 20);
-                        }
-                      }),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
+        ),
       ),
     );
   }

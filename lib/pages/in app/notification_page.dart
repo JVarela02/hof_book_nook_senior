@@ -7,6 +7,8 @@ import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
 
@@ -23,24 +25,52 @@ class _NotificationPageState extends State<NotificationPage> {
   List<String> myNotificationRefernces = [];
   List<String> myTransactionRefernces = [];
 
-  var currentHeaderReference;
 
-  String whereTo(var transaction) {
+  
+  whereTo(var transaction, transaction_reference, notification_reference){
     print('in whereTo');
-    var status = transaction['status'];
-    currentHeaderReference = status;
-    print('Status of transaction is ' + status);
-    if (status == "offer") {
-      Navigator.push(
-        context,
+    var getStatus = transaction['status'];
+    print('Status of transaction is ' + getStatus);
+
+    // Offer Page Route
+    if(getStatus == "offer"){
+      print("in first if");
+      if(transaction['seller_email'] == user.email){
+        Navigator.push(context,
         MaterialPageRoute(
           builder: (context) {
-            return OfferReceivedPage(transaction);
-          },
-        ),
-      );
+          return OfferReceivedPage(transaction, transaction_reference, notification_reference); },
+        ), 
+        );
+      }
+      else{
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return NotifCompletePage(); },
+        ), 
+        );
+      }
     }
-    return currentHeaderReference;
+    if(getStatus == "counter"){
+      print("in second if");
+      if(transaction['buyer_email'] == user.email){
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return CounterOfferPage(transaction, transaction_reference, notification_reference); },
+        ), 
+        );
+      }
+      else{
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return NotifCompletePage(); },
+        ), 
+        );
+      }
+    }
   }
 
   //get textbooks
@@ -136,7 +166,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   Map<String, dynamic> transactionData =
                       queryTransactionSnapshot.data()!;
 
-                  whereTo(transactionData);
+                  whereTo(transactionData, myTransactionRefernce, index);
 
                   // Navigator.popUntil(context, (route) => false);
                   // Navigator.push(context,

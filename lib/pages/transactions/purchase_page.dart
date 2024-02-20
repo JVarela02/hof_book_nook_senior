@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/confirm_exchange_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/confirm_purchase.dart';
 
@@ -29,18 +29,20 @@ class _PurchasePageState extends State<PurchasePage> {
     List<String> buyerReferences = [];
     print("In getBuyerBooks");
     await FirebaseFirestore.instance
-        .collection('textbooks')
-        .where('Seller', isEqualTo: user.email)
-        //.where('inNegotiations', isEqualTo: false)
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              //print(document.reference.id);
-              buyerReferences.add(document.reference.id);
-            },
-          ),
-        );
+
+          .collection('textbooks')
+          .where('Seller', isEqualTo: user.email)
+          .where('InNegotiations', isEqualTo: false)
+          .get()
+          .then(
+            (snapshot) => snapshot.docs.forEach(
+              (document) {
+                //print(document.reference.id);
+                buyerReferences.add(document.reference.id);
+              },
+            ),
+          );
+
     var collection = FirebaseFirestore.instance.collection('textbooks');
     var bReferences;
     for (bReferences in buyerReferences) {
@@ -243,14 +245,13 @@ class _PurchasePageState extends State<PurchasePage> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        Row(
-                          children: [
-                            Image.network(
-                              itemID['Cover'],
-                              scale: 0.7,
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(
+
+                        Image.network(itemID['Cover'],
+                        scale: 1,),
+                    
+                        SizedBox(width: 20),
+                          
+                        Expanded(
                               child: Column(
                                 children: [
                                   Align(

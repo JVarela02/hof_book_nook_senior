@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
+// import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:http/http.dart' as http;
 
 class ConfirmPurchasePage extends StatefulWidget {
@@ -188,39 +188,57 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
             ),
           ),
         ),
-        body: Center(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Expanded(
-              child: Column(children: [
-                Row(
-                  children: [
-                    Image.network(
-                      forSaleBook['Cover'],
-                      scale: 0.7,
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              forSaleBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Condition: " + forSaleBook['Condition'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 15,
+
+      ),
+      body: 
+      Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                      children: [
+                        Image.network(forSaleBook['Cover'],
+                        scale: 1,),
+                    
+                        SizedBox(width: 20),
+                          
+                        Expanded(
+                              child: Column(
+                                children: [
+                    
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(forSaleBook['Title'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Condition: " + forSaleBook['Condition'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Price: " + forSaleBook['Price'] + " credits",
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                                ],
+
                               ),
                             ),
                           ),

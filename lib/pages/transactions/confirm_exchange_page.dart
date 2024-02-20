@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
+// import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
+// import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class ConfirmExchangePage extends StatefulWidget {
   final Map<String, dynamic> forSaleBook;
@@ -145,24 +146,21 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     print(response.body);
   }
 
-  Future sendNotification(int transaction_ID) async {
-    final notification = <String, dynamic>{
-      "header": buyerName +
-          " wants to make a exchange for your book! Please confirm or deny exchange!",
-      "message": buyerName +
-          " wants to exchange their " +
-          exchangeBook["Title"] +
-          " for your " +
-          forSaleBook["Title"],
-      "read": "false",
-      "recipient": sellerEmail,
-      "sender": buyerEmail,
-      "transaction_ID": transaction_ID,
-      "type": "exchange"
+
+
+  /* Future sendNotification(int transaction_ID) async {
+    final notification = <String, dynamic> {
+      "header" : buyerName+ " wants to make a exchange for your book!",
+      "message" : buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"],
+      "read" : "false",
+      "recipient" : sellerEmail,
+      "sender" : buyerEmail,
+      "transaction_ID" : transaction_ID
+
     };
     var db = FirebaseFirestore.instance;
     db.collection("notifications").doc().set(notification);
-  }
+  } */
 
   Future createTransaction() async {
     int code = await codeGenerator();
@@ -211,11 +209,10 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       'InNegotiations': true,
     });
 
-    sendNotification(code);
-    emailSeller(
-        user_name: buyerName,
-        textbook_name: forSaleBook['Title'],
-        seller_email: sellerEmail);
+
+    sendNotification(code,buyerName + " wants to make a exchange for your book! Please confirm or deny exchange!", buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"], sellerEmail,buyerEmail);
+    emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+
     Navigator.of(context).pop();
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -238,39 +235,56 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
             ),
           ),
         ),
-        body: Center(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Expanded(
-              child: Column(children: [
-                Row(
-                  children: [
-                    Image.network(
-                      forSaleBook['Cover'],
-                      scale: 0.7,
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              forSaleBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Condition: " + forSaleBook['Condition'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 15,
+      ),
+      body: 
+      Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                      children: [
+                        Image.network(forSaleBook['Cover'],
+                        scale: 1,),
+                    
+                        SizedBox(width: 20),
+                          
+                        Expanded(
+                              child: Column(
+                                children: [
+                    
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(forSaleBook['Title'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Condition: " + forSaleBook['Condition'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Price: " + forSaleBook['Price'] + " credits",
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                                ],
+
                               ),
                             ),
                           ),
@@ -287,35 +301,48 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                         ],
                       ),
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Image.network(
-                      exchangeBook['Cover'],
-                      scale: 0.7,
-                    ),
-                    SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              exchangeBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Condition: " + exchangeBook['Condition'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 15,
+
+                    Row(
+                      children: [
+                        Image.network(exchangeBook['Cover'],
+                        scale: 1,),
+                    
+                        SizedBox(width: 20),
+                          
+                        Expanded(
+                              child: Column(
+                                children: [
+                    
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(exchangeBook['Title'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Condition: " + exchangeBook['Condition'],
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                    
+                                  SizedBox(height:30),
+                        
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text("Price: " + exchangeBook['Price'] + " credits",
+                                    style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                     ),),
+                                  ),
+                                ],
+
                               ),
                             ),
                           ),

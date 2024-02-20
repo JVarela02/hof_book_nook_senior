@@ -7,6 +7,8 @@ import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
 
@@ -28,13 +30,45 @@ class _NotificationPageState extends State<NotificationPage> {
     print('in whereTo');
     var getStatus = transaction['status'];
     print('Status of transaction is ' + getStatus);
+
+    // Offer Page Route
     if(getStatus == "offer"){
-      Navigator.push(context,
-       MaterialPageRoute(
-         builder: (context) {
-         return OfferReceivedPage(transaction, transaction_reference, notification_reference); },
-       ),
-     );
+      print("in first if");
+      if(transaction['seller_email'] == user.email){
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return OfferReceivedPage(transaction, transaction_reference, notification_reference); },
+        ), 
+        );
+      }
+      else{
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return NotifCompletePage(); },
+        ), 
+        );
+      }
+    }
+    if(getStatus == "counter"){
+      print("in second if");
+      if(transaction['buyer_email'] == user.email){
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return CounterOfferPage(transaction, transaction_reference, notification_reference); },
+        ), 
+        );
+      }
+      else{
+        Navigator.push(context,
+        MaterialPageRoute(
+          builder: (context) {
+          return NotifCompletePage(); },
+        ), 
+        );
+      }
     }
     // 
   }

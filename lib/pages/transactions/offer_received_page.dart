@@ -38,6 +38,24 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     }
   }
 
+  var saleTextbookReference = "";
+  Future findTextbook(String ISBN, String Buyer) async {
+    print("getting Textbook");
+    await FirebaseFirestore.instance
+        .collection('textbooks')
+        .where('ISBN', isEqualTo: ISBN)
+        .where('Seller', isEqualTo: Buyer)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(document.reference.id);
+              saleTextbookReference = document.reference.id;
+            },
+          ),
+        );
+  }
+
   offerAccepted()  {
     // Sends them to set up meet-up page 
     print("ahh");;
@@ -72,6 +90,11 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     receiver_email: transactionData['buyer_email']);
     print("email sent");
 
+    // Update for Exchange Textbook inNegotiations status to False 
+    await findTextbook(transactionData['forSale']['ISBN'], transactionData['buyer']);
+    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
+      forExchange_document.update({'inNegotiation': false, });
+
     // send back to navigation page  
     Navigator.pop(context);
     Navigator.pop(context);
@@ -89,11 +112,11 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     checkRemainder();
     return Scaffold(
       appBar: AppBar(
-        title: const FittedBox(
+        title: FittedBox(
           child: Padding(
             padding: EdgeInsets.only(left: 1.0),
             child: Align(
-                alignment: Alignment.centerLeft, child: Text("Purchase")),
+                alignment: Alignment.centerLeft, child: Text("Offer for Order " + transactionData['transaction_ID'])),
           ),
         ),
       ),

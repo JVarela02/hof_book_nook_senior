@@ -188,8 +188,6 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
             ),
           ),
         ),
-
-      ),
       body: 
       Center(
           child: SingleChildScrollView(
@@ -237,21 +235,6 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
                                     fontSize: 15,
                                      ),),
                                   ),
-                                ],
-
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Price: " + forSaleBook['Price'] + " credits",
-                              style: GoogleFonts.merriweather(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

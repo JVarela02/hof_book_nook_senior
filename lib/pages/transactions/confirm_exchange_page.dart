@@ -235,7 +235,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
             ),
           ),
         ),
-      ),
       body: 
       Center(
           child: SingleChildScrollView(
@@ -273,33 +272,21 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                                     fontSize: 15,
                                      ),),
                                   ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Price: " + forSaleBook['Price'] + " credits",
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
-                                ],
-
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
+                       
+                             SizedBox(height:30),
+            
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               "Price: " + forSaleBook['Price'] + " credits",
                               style: GoogleFonts.merriweather(
                                 fontSize: 15,
-                              ),
-                            ),
+                              ),),
                           ),
                         ],
                       ),
+                    ),
+                    ],
                     ),
 
                     Row(
@@ -341,21 +328,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                                     fontSize: 15,
                                      ),),
                                   ),
-                                ],
-
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 30),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "Price: " + exchangeBook['Price'] + " credits",
-                              style: GoogleFonts.merriweather(
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

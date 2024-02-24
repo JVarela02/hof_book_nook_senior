@@ -23,95 +23,93 @@ class accountPage extends StatefulWidget {
 }
 
 class _accountPageState extends State<accountPage> {
-  final user = FirebaseAuth.instance.currentUser!;
+
+   final user = FirebaseAuth.instance.currentUser!;
+
 
   // full Names list
   List<String> fullNames = [];
 
   //get fullNames
-  Future getfullName() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: user.email)
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              print(document.reference);
-              fullNames.add(document.reference.id);
-            },
-          ),
-        );
+   Future getfullName() async {
+    await FirebaseFirestore.instance.collection('users')
+    .where('email', isEqualTo: user.email)
+    .get().then(
+      (snapshot) => snapshot.docs.forEach(
+        (document) {
+          print(document.reference);
+          fullNames.add(document.reference.id);
+        },
+      ),
+    );
   }
+
 
   // user names
   List<String> userNames = [];
 
   //get userNames
   Future getuserName() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: user.email)
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              print(document.reference);
-              userNames.add(document.reference.id);
-            },
-          ),
-        );
+    await FirebaseFirestore.instance.collection('users')
+    .where('email', isEqualTo: user.email)
+    .get().then(
+      (snapshot) => snapshot.docs.forEach(
+        (document) {
+          print(document.reference);
+          userNames.add(document.reference.id);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const FittedBox(
-          child: Padding(
-            padding: EdgeInsets.only(left: 1.0),
-            child: Align(
-                alignment: Alignment.centerLeft, child: Text("Account Page")),
-          ),
-        ),
-        actions: [
+        title:
+         const FittedBox(
+           child: Padding(
+             padding: EdgeInsets.only(left: 1.0),
+             child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Account Page")
+              ),
+           ),
+         ),
+
+         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                  onTap: () async {
-                    FirebaseAuth.instance.signOut();
-                    Navigator.popUntil(context, (route) => false);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return LoginPage(
-                            showRegisterPage: () {},
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  child: const Text("Logout",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ))),
+              onTap: () async {
+                FirebaseAuth.instance.signOut();
+                Navigator.popUntil(context, (route) => false);
+                Navigator.push(context,MaterialPageRoute(
+                           builder: (context) {
+                           return LoginPage(showRegisterPage: () {  },);
+                          },
+                        ), );
+              },
+                child: const Text("Logout",
+                style: TextStyle(
+                  color : Colors.white,
+                  fontWeight: FontWeight.bold,
+                ))
+                     ),
             ),
-          )
-        ],
-      ),
-      body: Center(
+          )],
+    ),
+
+  body: Center(
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
               child: ButtonBar(
                 alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize
-                    .min, // this will take space as minimum as posible(to center)
+                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
@@ -121,8 +119,7 @@ class _accountPageState extends State<accountPage> {
                         return HomePage();
                       }));
                     }, // route to account page
-                    child: Text(
-                      'Home',
+                    child: Text('Home',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -136,10 +133,14 @@ class _accountPageState extends State<accountPage> {
                     }, // route to my page ... this page ...
                     child: Column(
                       children: [
-                        Text('My'),
-                        Text('Listings'),
-                      ],
-                    ),
+                        Text(
+                          'My'
+                        ),
+                        Text(
+                          'Listings'
+                        ),
+
+                      ],),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -151,118 +152,115 @@ class _accountPageState extends State<accountPage> {
                     },
                     child: Column(
                       children: [
-                        Text('My'),
-                        Text('Account'),
-                      ],
+                      Text(
+                      'My'
                     ),
+                        Text(
+                          'Account'
+                        ),
+
+                      ],),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return NotificationPage();
-                      }));
-                    }, // route to account page
-                    child: Text('Notifications'),
-                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return NotificationPage();
+                    }));
+                  }, // route to account page
+                  child: Text('Notifications'),
+                ),
                 ],
               ),
             ),
-            SizedBox(
-              height: 15,
-            ),
-            Text("Signed in as: " + user.email!),
-            SizedBox(height: 30),
-            SizedBox(
-              height: 60,
-              width: 300,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return TextbookInputPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(
-                  "Add Listing",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
+           
+
+          SizedBox(height: 15,),
+
+          Text("Signed in as: " + user.email!),
+
+          SizedBox(height:30),
+
             SizedBox(
               height: 60,
               width: 300,
-              child: ElevatedButton(
+              child: ElevatedButton( 
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return RemoveTextbookPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(
-                  "Remove Listing",
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return TextbookInputPage();
+                          },
+                        ),);},
+                child: Text("Add Listing",
                   style: TextStyle(color: Colors.white),
-                ),
+                ),      
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+          
+          SizedBox(height: 30,),
+
             SizedBox(
               height: 60,
               width: 300,
-              child: ElevatedButton(
+              child: ElevatedButton( 
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return SupportPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(
-                  "Get Help",
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return RemoveTextbookPage();
+                          },
+                        ),);},
+                child: Text("Remove Listing",
                   style: TextStyle(color: Colors.white),
-                ),
+                ),         
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+
+          SizedBox(height: 30,),
+
             SizedBox(
               height: 60,
               width: 300,
-              child: ElevatedButton(
+              child: ElevatedButton( 
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return CreditPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(
-                  "Purchase Credits",
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return SupportPage();
+                          },
+                        ),);},
+                child: Text("Get Help",
                   style: TextStyle(color: Colors.white),
-                ),
+                ),         
               ),
             ),
+
+
+            SizedBox(height: 30,),
+
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton( 
+                onPressed: () {
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return CreditPage();
+                          },
+                        ),);},
+                child: Text("Purchase Credits",
+                  style: TextStyle(color: Colors.white),
+                ),         
+              ),
+            ),
+
             SizedBox(
               height: 30,
             ),
@@ -282,36 +280,37 @@ class _accountPageState extends State<accountPage> {
                 },
                 child: Text(
                   "Wishlist",
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
               ),
             ),
-            SizedBox(
-              height: 30,
-            ),
+
+            SizedBox(height: 30,),
+
             SizedBox(
               height: 60,
               width: 300,
-              child: ElevatedButton(
+              child: ElevatedButton( 
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ForgotPasswordPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text(
-                  "Reset Password",
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return ForgotPasswordPage();
+                          },
+                        ),);},
+                child: Text("Reset Password",
                   style: TextStyle(color: Colors.white),
-                ),
+                ),         
               ),
             ),
+
+
           ],
         ),
+
       ),
+
     );
   }
 }

@@ -56,8 +56,41 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         );
   }
 
+  void showDialogBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Expanded(
+          child: AlertDialog(
+            title: Text('End of Demo'),
+            content: Text('This concludes our demo next step is setting up a meet-up'),
+            actions: [
+              TextButton(
+                //textColor: Colors.black,
+                onPressed: () {
+                  Navigator.popUntil(context, (route) => false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return NotificationPage();
+                      },
+                    ),
+                  );
+                },
+                child: Text('Mark as Read'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
   offerAccepted()  {
     // Sends them to set up meet-up page 
+    showDialogBox();
     print("ahh");;
   }
 
@@ -93,7 +126,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     // Update for Exchange Textbook inNegotiations status to False 
     await findTextbook(transactionData['forSale']['ISBN'], transactionData['buyer']);
     final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
-      forExchange_document.update({'inNegotiation': false, });
+      forExchange_document.update({'InNegotiations': false, });
 
     // send back to navigation page  
     Navigator.pop(context);
@@ -116,7 +149,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
           child: Padding(
             padding: EdgeInsets.only(left: 1.0),
             child: Align(
-                alignment: Alignment.centerLeft, child: Text("Offer for Order " + transactionData['transaction_ID'])),
+                alignment: Alignment.centerLeft, child: Text("Offer for Order " + transactionData['transaction_ID'].toString())),
           ),
         ),
       ),

@@ -46,7 +46,7 @@ class CounterOfferPageState extends State<CounterOfferPage> {
   counterAccepted() async {
     // Updates transaction status to "meet-up (s)"
     final transaction_document = FirebaseFirestore.instance.collection('transactions').doc(transactionReference);
-      transaction_document.update({'status': "meet-up (s)", });
+      transaction_document.update({'status': "purchase", });
     print("transactions updated");
 
     // updates notification to "read"
@@ -116,7 +116,7 @@ class CounterOfferPageState extends State<CounterOfferPage> {
     // change status of inNegotiations of textbook to false
     await findTextbook(transactionData['forSale']['ISBN'], transactionData['seller']);
     final forSale_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
-      forSale_document.update({'inNegotiation': false, });
+      forSale_document.update({'InNegotiations': false, });
 
     // send back to navigation page  
     Navigator.pop(context);
@@ -138,7 +138,7 @@ class CounterOfferPageState extends State<CounterOfferPage> {
           child: Padding(
             padding: EdgeInsets.only(left: 1.0),
             child: Align(
-                alignment: Alignment.centerLeft, child: Text("Counter offer for Order " + transactionData['transaction_ID'])),
+                alignment: Alignment.centerLeft, child: Text("Counter offer for Order " + transactionData['transaction_ID'].toString())),
           ),
         ),
       ),
@@ -223,7 +223,7 @@ class CounterOfferPageState extends State<CounterOfferPage> {
 
                     Align(
                         alignment: Alignment.center,
-                        child: Text(transactionData['seler'] + " has chosen to reject an exchange and asks for a direct credit purchse instead. \n Please accept or deny using the buttons below.",
+                        child: Text(transactionData['seller'] + " has chosen to reject an exchange and asks for a direct credit purchse instead. \n Please accept or deny using the buttons below.",
                         style: GoogleFonts.merriweather(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

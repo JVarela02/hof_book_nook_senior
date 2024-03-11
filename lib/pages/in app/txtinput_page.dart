@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:the_hof_book_nook/read%20data/API_route.dart';
+import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class TextbookInputPage extends StatefulWidget {
   const TextbookInputPage({super.key});
@@ -40,7 +41,8 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
   }
 
 
-  Future checkInfo(String tTitle, String tAuthor, String tDescription, String tCover) async {
+  Future checkInfo(String tTitle, List tTitleSplit, List tAuthorSplit, String tAuthor, String tDescription, String tCover) async {
+    String uploadID = await idGenerator(3);
     if (isbnLengthCorrect()) {
       textbookToFirebase(
         user.email.toString(),
@@ -50,7 +52,10 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
         tDescription,
         tTitle,
         tAuthor,
-        tCover
+        tCover,
+        tTitleSplit,
+        tAuthorSplit,
+        uploadID
       );
       showDialog(
           context: context,
@@ -74,7 +79,7 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
   }
 
   Future textbookToFirebase(String Txtseller, String ISBNnumber,
-      String Txtcondition, String Txtprice, String description, String title, String author, String poster) async {
+      String Txtcondition, String Txtprice, String description, String title, String author, String poster, List splitTitle, List authorSplit, String uploadID) async {
     await FirebaseFirestore.instance.collection("textbooks").add({
       'Seller': Txtseller,
       'ISBN': ISBNnumber,
@@ -85,12 +90,15 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
       'Condition': Txtcondition,
       'Price': Txtprice,
       'InNegotiations': false,
+      'Title Parts': splitTitle,
+      'Author Parts': authorSplit,
+      'Textbook ID': uploadID
     });
   }
 
   Future getDetails() async {
     Textbook T = await APIRouter().getTextbook(_isbnInputController.text);
-    checkInfo(T.title, T.authors, T.description, T.image);
+    checkInfo(T.title, T.titleSplit, T.authorSplit, T.authors, T.description, T.image);
   }
 
   @override

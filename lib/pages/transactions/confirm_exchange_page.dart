@@ -48,37 +48,37 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName,
       this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
-  Future confirmUniqueCode(int code) async {
-    List<dynamic> references = [];
-    await FirebaseFirestore.instance
-        .collection('transactions')
-        .where('transaction_ID', isEqualTo: code)
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              //print(document.reference.id);
-              references.add(document.reference.id);
-            },
-          ),
-        );
-    if (references.length > 1) {
-      return false;
-    } else {
-      return true;
-    }
-  }
+  // Future confirmUniqueCode(int code) async {
+  //   List<dynamic> references = [];
+  //   await FirebaseFirestore.instance
+  //       .collection('transactions')
+  //       .where('transaction_ID', isEqualTo: code)
+  //       .get()
+  //       .then(
+  //         (snapshot) => snapshot.docs.forEach(
+  //           (document) {
+  //             //print(document.reference.id);
+  //             references.add(document.reference.id);
+  //           },
+  //         ),
+  //       );
+  //   if (references.length > 1) {
+  //     return false;
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
-  Future codeGenerator() async {
-    int code = Random().nextInt(899999) + 100000;
-    bool unique = await confirmUniqueCode(code);
-    if (unique == true) {
-      return code;
-    } else {
-      codeGenerator();
-    }
-    // print(code);
-  }
+  // Future codeGenerator() async {
+  //   int code = Random().nextInt(899999) + 100000;
+  //   bool unique = await confirmUniqueCode(code);
+  //   if (unique == true) {
+  //     return code;
+  //   } else {
+  //     codeGenerator();
+  //   }
+  //   // print(code);
+  // }
 
   var forSaleReference = "";
   var forExchangeReference = "";
@@ -163,7 +163,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   } */
 
   Future createTransaction() async {
-    int code = await codeGenerator();
+    int code = await idGenerator(6);
     await FirebaseFirestore.instance.collection("transactions").add({
       'seller': sellerName,
       'seller_email': sellerEmail,
@@ -178,6 +178,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': forSaleBook['Price'],
         'Title': forSaleBook['Title'],
         'Seller': forSaleBook['Seller'],
+        'BookID': forSaleBook['Textbook ID']
       },
       'forExchange': {
         'Author': exchangeBook['Author'],
@@ -188,6 +189,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': exchangeBook['Price'],
         'Title': exchangeBook['Title'],
         'Seller': exchangeBook['Seller'],
+        'BookID': exchangeBook['Textbook ID']
       },
       'remainder': priceDifference,
       'status': "offer",

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -47,4 +49,88 @@ Future emailNotification({
       }),
     );
     print(response.body);
+  }
+
+final user = FirebaseAuth.instance.currentUser!;
+Future getLastName() async {
+  var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email);
+    var querySnapshot = await collection.get();
+    for (var queryDocumentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data = queryDocumentSnapshot.data();
+      var firstName = data['first name'];
+      var lastName = data['last name'];
+      return lastName;
+    }
+}
+
+    Future confirmUniqueID(var code, String where) async {
+    List<dynamic> references = [];
+    if(where == "transactions"){
+      await FirebaseFirestore.instance
+          .collection('transactions')
+          .where('transaction_ID', isEqualTo: code)
+          .get()
+          .then(
+            (snapshot) => snapshot.docs.forEach(
+              (document) {
+                //print(document.reference.id);
+                references.add(document.reference.id);
+              },
+            ),
+          );
+    }
+    else if(where == "textbooks"){
+      await FirebaseFirestore.instance
+          .collection('textbooks')
+          .where('Textbook ID', isEqualTo: code)
+          .get()
+          .then(
+            (snapshot) => snapshot.docs.forEach(
+              (document) {
+                //print(document.reference.id);
+                references.add(document.reference.id);
+              },
+            ),
+          );
+    }
+
+    if (references.length > 1) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+
+  Future idGenerator(int lengthRandom) async {
+    String lastName = await getLastName();
+    if(lengthRandom == 6){
+      int code = Random().nextInt(899999) + 100000;
+      bool unique = await confirmUniqueID(code, "transactions");
+      if (unique == true) {
+        print("Code Created = " + code.toString());
+        return code;
+      } else {      
+        idGenerator(6);
+      }
+    }
+
+    else if(lengthRandom == 3){
+      int code = Random().nextInt(899) + 100;
+      String id = lastName + code.toString();
+      bool unique = await confirmUniqueID(id, "textbooks");
+      if (unique == true) {
+        // print("Code Created = " + id);
+        return id;
+      } else {
+        idGenerator(3);
+      }
+    }
+
+    else{
+      int code = Random().nextInt(89999) + 10000;
+      return code;
+    }
   }

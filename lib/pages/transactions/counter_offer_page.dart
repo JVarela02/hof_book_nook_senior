@@ -60,7 +60,8 @@ class CounterOfferPageState extends State<CounterOfferPage> {
 
     print("transactions updated");
 
-    // updates notification to "read"
+    // updates notification to "read" if applicable 
+    if(notificationReference != 0 ){
     final notification_document = FirebaseFirestore.instance
         .collection('notifications')
         .doc(notificationReference);
@@ -68,6 +69,10 @@ class CounterOfferPageState extends State<CounterOfferPage> {
       'read': true,
     });
     print("notification updated");
+    }
+    else{
+      print("ha nope no notification");
+    }
 
     // creates a new notification for seller
     sendNotification(
@@ -122,6 +127,7 @@ class CounterOfferPageState extends State<CounterOfferPage> {
     print("transactions updated");
 
     // update notification to "read"
+    if(notificationReference != 0 ){
     final notification_document = FirebaseFirestore.instance
         .collection('notifications')
         .doc(notificationReference);
@@ -129,6 +135,10 @@ class CounterOfferPageState extends State<CounterOfferPage> {
       'read': true,
     });
     print("notification updated");
+    }
+    else{
+      print("ha nope no notification");
+    }
 
     // create a new notification for seller
     sendNotification(

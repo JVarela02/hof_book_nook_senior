@@ -126,6 +126,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     print("transactions updated");
 
     // update notification to "read"
+    if(notificationReference != 0 ){
     final notification_document = FirebaseFirestore.instance
         .collection('notifications')
         .doc(notificationReference);
@@ -133,6 +134,10 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'read': true,
     });
     print("notification updated");
+    }
+    else{
+      print("ha nope no notification");
+    }
 
     // create a new notification for buyer
     sendNotification(

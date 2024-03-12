@@ -48,6 +48,8 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName,
       this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
+  int exchange_step = 0;
+
   Future confirmUniqueCode(int code) async {
     List<dynamic> references = [];
     await FirebaseFirestore.instance
@@ -146,8 +148,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
     print(response.body);
   }
 
-
-
   /* Future sendNotification(int transaction_ID) async {
     final notification = <String, dynamic> {
       "header" : buyerName+ " wants to make a exchange for your book!",
@@ -191,7 +191,8 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       },
       'remainder': priceDifference,
       'status': "offer",
-      'transaction_ID': code
+      'transaction_ID': code,
+      'step': exchange_step
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale
@@ -209,9 +210,23 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       'InNegotiations': true,
     });
 
+    sendNotification(
+      code,
+      buyerName +
+          " wants to make a exchange for your book! Please confirm or deny exchange!",
+      buyerName +
+          " wants to exchange their " +
+          exchangeBook["Title"] +
+          " for your " +
+          forSaleBook["Title"],
+      sellerEmail,
+      buyerEmail,
+    );
 
-    sendNotification(code,buyerName + " wants to make a exchange for your book! Please confirm or deny exchange!", buyerName+ " wants to exchange their "+exchangeBook["Title"]+" for your "+forSaleBook["Title"], sellerEmail,buyerEmail);
-    emailSeller(user_name: buyerName, textbook_name: forSaleBook['Title'], seller_email: sellerEmail);
+    emailSeller(
+        user_name: buyerName,
+        textbook_name: forSaleBook['Title'],
+        seller_email: sellerEmail);
 
     Navigator.of(context).pop();
     Navigator.of(context).pop();
@@ -235,99 +250,97 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
             ),
           ),
         ),
-      body: 
-      Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                      children: [
-                        Image.network(forSaleBook['Cover'],
-                        scale: 1,),
-                    
-                        SizedBox(width: 20),
-                          
-                        Expanded(
-                              child: Column(
-                                children: [
-                    
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(forSaleBook['Title'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Condition: " + forSaleBook['Condition'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
-                       
-                             SizedBox(height:30),
-            
+        body: Center(
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Expanded(
+              child: Column(children: [
+                Row(
+                  children: [
+                    Image.network(
+                      forSaleBook['Cover'],
+                      scale: 1,
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              forSaleBook['Title'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Condition: " + forSaleBook['Condition'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               "Price: " + forSaleBook['Price'] + " credits",
                               style: GoogleFonts.merriweather(
                                 fontSize: 15,
-                              ),),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    ],
+                  ],
+                ),
+                Row(
+                  children: [
+                    Image.network(
+                      exchangeBook['Cover'],
+                      scale: 1,
                     ),
-
-                    Row(
-                      children: [
-                        Image.network(exchangeBook['Cover'],
-                        scale: 1,),
-                    
-                        SizedBox(width: 20),
-                          
-                        Expanded(
-                              child: Column(
-                                children: [
-                    
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(exchangeBook['Title'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Condition: " + exchangeBook['Condition'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Price: " + exchangeBook['Price'] + " credits",
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              exchangeBook['Title'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Condition: " + exchangeBook['Condition'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Price: " + exchangeBook['Price'] + " credits",
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

@@ -1,4 +1,4 @@
-  import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -98,7 +98,6 @@ class _MyListingsPageState extends State<MyListingsPage> {
   }
   */
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +145,8 @@ class _MyListingsPageState extends State<MyListingsPage> {
               padding: const EdgeInsets.all(10),
               child: ButtonBar(
                 alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
+                mainAxisSize: MainAxisSize
+                    .min, // this will take space as minimum as posible(to center)
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
@@ -156,7 +156,8 @@ class _MyListingsPageState extends State<MyListingsPage> {
                         return HomePage();
                       }));
                     }, // route to account page
-                    child: Text('Home',
+                    child: Text(
+                      'Home',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -170,14 +171,10 @@ class _MyListingsPageState extends State<MyListingsPage> {
                     }, // route to my page ... this page ...
                     child: Column(
                       children: [
-                        Text(
-                          'My'
-                        ),
-                        Text(
-                          'Listings'
-                        ),
-
-                      ],),
+                        Text('My'),
+                        Text('Listings'),
+                      ],
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -189,33 +186,27 @@ class _MyListingsPageState extends State<MyListingsPage> {
                     },
                     child: Column(
                       children: [
-                      Text(
-                      'My'
+                        Text('My'),
+                        Text('Account'),
+                      ],
                     ),
-                        Text(
-                          'Account'
-                        ),
-
-                      ],),
                   ),
                   ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return NotificationPage();
-                    }));
-                  }, // route to account page
-                  child: Text('Notifications'),
-                ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return NotificationPage();
+                      }));
+                    }, // route to account page
+                    child: Text('Notifications'),
+                  ),
                 ],
               ),
             ),
-      
             SizedBox(
               height: 10,
             ),
-      
             Expanded(
               child: FutureBuilder(
                 future: getTextbooks(),
@@ -225,12 +216,14 @@ class _MyListingsPageState extends State<MyListingsPage> {
                     itemBuilder: ((context, index) {
                       if (myListingRefernces.isNotEmpty) {
                         return ListTile(
-                          leading: GetCover(coverForSale: myListingRefernces[index],),// This will turn into photo of textbook
+                          leading: GetCover(
+                            coverForSale: myListingRefernces[index],
+                          ), // This will turn into photo of textbook
                           title: GetTitle(
                             titleForSale: myListingRefernces[index],
-                          ), 
-                          subtitle:
-                              GetPriceCondition(conpriceForSale: myListingRefernces[index]),
+                          ),
+                          subtitle: GetPriceCondition(
+                              conpriceForSale: myListingRefernces[index]),
                           trailing: Icon(
                             Icons.square_outlined,
                           ),

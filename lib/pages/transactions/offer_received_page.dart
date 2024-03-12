@@ -44,11 +44,11 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   }
 
   var saleTextbookReference = "";
-  Future findTextbook(String ISBN, String Buyer) async {
+  Future findTextbook(String txtID, String Buyer) async {
     print("getting Textbook");
     await FirebaseFirestore.instance
         .collection('textbooks')
-        .where('ISBN', isEqualTo: ISBN)
+        .where('Textbook ID', isEqualTo: txtID)
         .where('Seller', isEqualTo: Buyer)
         .get()
         .then(
@@ -161,15 +161,12 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         receiver_email: transactionData['buyer_email']);
     print("email sent");
 
-    // Update for Exchange Textbook inNegotiations status to False
-    await findTextbook(
-        transactionData['forSale']['ISBN'], transactionData['buyer']);
-    final forExchange_document = FirebaseFirestore.instance
-        .collection('textbooks')
-        .doc(saleTextbookReference);
-    forExchange_document.update({
-      'InNegotiations': false,
-    });
+
+    // Update for Exchange Textbook inNegotiations status to False 
+    await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['buyer']);
+    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
+      forExchange_document.update({'InNegotiations': false, });
+
 
     // send back to navigation page
     Navigator.pop(context);

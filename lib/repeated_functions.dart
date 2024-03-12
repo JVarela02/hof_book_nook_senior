@@ -59,7 +59,6 @@ Future getLastName() async {
     var querySnapshot = await collection.get();
     for (var queryDocumentSnapshot in querySnapshot.docs) {
       Map<String, dynamic> data = queryDocumentSnapshot.data();
-      var firstName = data['first name'];
       var lastName = data['last name'];
       return lastName;
     }

@@ -43,6 +43,7 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
 
   Future checkInfo(String tTitle, List tTitleSplit, List tAuthorSplit, String tAuthor, String tDescription, String tCover) async {
     String uploadID = await idGenerator(3);
+    print("upload id is " + uploadID);
     if (isbnLengthCorrect()) {
       textbookToFirebase(
         user.email.toString(),
@@ -80,6 +81,7 @@ class _TextbookInputPageState extends State<TextbookInputPage> {
 
   Future textbookToFirebase(String Txtseller, String ISBNnumber,
       String Txtcondition, String Txtprice, String description, String title, String author, String poster, List splitTitle, List authorSplit, String uploadID) async {
+    print("why don't you wanna take the id thats " + uploadID);
     await FirebaseFirestore.instance.collection("textbooks").add({
       'Seller': Txtseller,
       'ISBN': ISBNnumber,

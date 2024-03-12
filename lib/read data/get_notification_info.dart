@@ -191,3 +191,57 @@ class GetTransactionID extends StatelessWidget {
     );
   }
 }
+
+class GetDate extends StatelessWidget {
+  final String newDate;
+
+  GetDate({required this.newDate});
+
+  @override
+  Widget build(BuildContext context) {
+    //get the collection
+    CollectionReference transactions =
+        FirebaseFirestore.instance.collection('notifications');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: transactions.doc(newDate).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text(
+            '${data['date']} ',
+          );
+        }
+        return Text('Loading ...');
+      }),
+    );
+  }
+}
+
+class GetTime extends StatelessWidget {
+  final String newTime;
+
+  GetTime({required this.newTime});
+
+  @override
+  Widget build(BuildContext context) {
+    //get the collection
+    CollectionReference transactions =
+        FirebaseFirestore.instance.collection('notifications');
+
+    return FutureBuilder<DocumentSnapshot>(
+      future: transactions.doc(newTime).get(),
+      builder: ((context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          return Text(
+            '${data['date']} ',
+          );
+        }
+        return Text('Loading ...');
+      }),
+    );
+  }
+}

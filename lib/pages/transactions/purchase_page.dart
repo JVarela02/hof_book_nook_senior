@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/pages/transactions/confirm_exchange_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/confirm_purchase.dart';
 
-
 class PurchasePage extends StatefulWidget {
   final Map<String, dynamic> itemID;
   const PurchasePage(this.itemID);
@@ -20,7 +19,6 @@ class _PurchasePageState extends State<PurchasePage> {
   Map<String, dynamic> itemID;
   _PurchasePageState(this.itemID);
 
-
   final user = FirebaseAuth.instance.currentUser!;
 
   List<dynamic> buyerBooks = [];
@@ -31,20 +29,21 @@ class _PurchasePageState extends State<PurchasePage> {
     List<String> buyerReferences = [];
     print("In getBuyerBooks");
     await FirebaseFirestore.instance
-          .collection('textbooks')
-          .where('Seller', isEqualTo: user.email)
-          .where('InNegotiations', isEqualTo: false)
-          .get()
-          .then(
-            (snapshot) => snapshot.docs.forEach(
-              (document) {
-                //print(document.reference.id);
-                buyerReferences.add(document.reference.id);
-              },
-            ),
-          );
+        .collection('textbooks')
+        .where('Seller', isEqualTo: user.email)
+        .where('InNegotiations', isEqualTo: false)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              buyerReferences.add(document.reference.id);
+            },
+          ),
+        );
     var collection = FirebaseFirestore.instance.collection('textbooks');
     var bReferences;
+
     for (bReferences in buyerReferences) {
       var docSnapshot = await collection.doc(bReferences).get();
       if (docSnapshot.exists) {
@@ -87,8 +86,6 @@ class _PurchasePageState extends State<PurchasePage> {
     }
     //print(wishBooks.length);
     //print(wishBooks);
-
-
   }
 
   int countRuns = 0;
@@ -96,15 +93,13 @@ class _PurchasePageState extends State<PurchasePage> {
   List<String> crossReference = ["Exchangeables", "No Items Available"];
   String exchangeValue = "Exchangeables";
 
-
   Future compareBooks() async {
     countRuns += 1;
     print("In compareBooks run: " + countRuns.toString());
     if (countRuns == 1) {
       await getWishBooks();
       await getBuyerBooks();
-    } 
-    else {
+    } else {
       print("did this already");
     }
     // List<String> crossReference = ["Exchangeables", "No Items Available"];
@@ -122,8 +117,7 @@ class _PurchasePageState extends State<PurchasePage> {
         if (wishItem["ISBN"] == buyerItem["ISBN"]) {
           if (crossReference.contains(wishItem["Title"])) {
             print("already there");
-          } 
-          else {
+          } else {
             String textbook = wishItem["Title"];
             crossReference.add(textbook);
           }
@@ -142,7 +136,6 @@ class _PurchasePageState extends State<PurchasePage> {
   int buyerPrice = 0;
   Map<String, dynamic> exchangeBook = {};
 
-
   calculateDifference(var exItem) {
     print("Calculating differece");
     var book;
@@ -150,8 +143,7 @@ class _PurchasePageState extends State<PurchasePage> {
       difference = "N/A";
       print("No calc needed");
       return;
-    } 
-    else {
+    } else {
       for (book in buyerBooks) {
         print("In other loops");
         if (book["Title"] == exItem) {
@@ -169,8 +161,6 @@ class _PurchasePageState extends State<PurchasePage> {
     difference = priceDif.toString();
   }
 
-
-
   var buyerName = "";
   Future getBuyerName() async {
     var collection = FirebaseFirestore.instance
@@ -185,7 +175,6 @@ class _PurchasePageState extends State<PurchasePage> {
       buyerName = fullName;
     }
   }
-
 
   var sellerName = "";
   Future getSellerName() async {
@@ -218,20 +207,19 @@ class _PurchasePageState extends State<PurchasePage> {
 
   Future confirmExchangePageRoute() async {
     await getSellerName();
-    Navigator.push(context, 
-      MaterialPageRoute(builder: (BuildContext context) {
-      return ConfirmExchangePage(itemID, exchangeBook, sellerName, buyerName,difference, itemID["Seller"].toString(), user.email.toString());}));
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return ConfirmExchangePage(itemID, exchangeBook, sellerName, buyerName,
+          difference, itemID["Seller"].toString(), user.email.toString());
+    }));
   }
 
   Future confirmPurchasePageRoute() async {
     await getSellerName();
-    Navigator.push(context, 
-      MaterialPageRoute(builder: (BuildContext context) {
-      return ConfirmPurchasePage(itemID, sellerName, buyerName,user.email.toString(), itemID["Seller"].toString());}));
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return ConfirmPurchasePage(itemID, sellerName, buyerName,
+          user.email.toString(), itemID["Seller"].toString());
+    }));
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -257,13 +245,13 @@ class _PurchasePageState extends State<PurchasePage> {
                     child: Column(
                       children: [
                         Row(
-                          children:[
-                            Image.network(itemID['Cover'],
-                            scale: 1,),
-                    
-                        SizedBox(width: 20),
-                          
-                        Expanded(
+                          children: [
+                            Image.network(
+                              itemID['Cover'],
+                              scale: 1,
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
                               child: Column(
                                 children: [
                                   Align(

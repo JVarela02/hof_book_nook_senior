@@ -35,6 +35,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
   ConfirmPurchasePageState(this.forSaleBook, this.sellerName, this.buyerName,
       this.buyerEmail, this.sellerEmail);
 
+
   // Future confirmUniqueCode(int code) async {
   //   List<dynamic> references = [];
   //   await FirebaseFirestore.instance
@@ -55,6 +56,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
   //     return true;
   //   }
   // }
+
 
   // Future codeGenerator() async {
   //   int code = Random().nextInt(899999) + 100000;
@@ -153,7 +155,8 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
         'BookID': forSaleBook['Textbook ID']
       },
       'status': "purchase",
-      'transaction_ID': code
+      'transaction_ID': code,
+      'step': purchase_step
     });
     sendNotification(code);
     emailSeller(
@@ -189,53 +192,52 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
             ),
           ),
         ),
-      body: 
-      Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                      children: [
-                        Image.network(forSaleBook['Cover'],
-                        scale: 1,),
-                    
-                        SizedBox(width: 20),
-                          
-                        Expanded(
-                              child: Column(
-                                children: [
-                    
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(forSaleBook['Title'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Condition: " + forSaleBook['Condition'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Price: " + forSaleBook['Price'] + " credits",
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
+        body: Center(
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Expanded(
+              child: Column(children: [
+                Row(
+                  children: [
+                    Image.network(
+                      forSaleBook['Cover'],
+                      scale: 1,
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              forSaleBook['Title'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Condition: " + forSaleBook['Condition'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Price: " + forSaleBook['Price'] + " credits",
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

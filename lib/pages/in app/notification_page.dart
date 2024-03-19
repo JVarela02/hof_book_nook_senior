@@ -25,49 +25,55 @@ class _NotificationPageState extends State<NotificationPage> {
   List<String> myNotificationRefernces = [];
   List<String> myTransactionRefernces = [];
 
-
-  
-  whereTo(var transaction, transaction_reference, notification_reference){
+  whereTo(var transaction, transaction_reference, notification_reference) {
     print('in whereTo');
     var getStatus = transaction['status'];
     print('Status of transaction is ' + getStatus);
 
     // Offer Page Route
-    if(getStatus == "offer"){
+    if (getStatus == "offer") {
       print("in first if");
-      if(transaction['seller_email'] == user.email){
-        Navigator.push(context,
-        MaterialPageRoute(
-          builder: (context) {
-          return OfferReceivedPage(transaction, transaction_reference, notification_reference); },
-        ), 
+      if (transaction['seller_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return OfferReceivedPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
         );
-      }
-      else{
-        Navigator.push(context,
-        MaterialPageRoute(
-          builder: (context) {
-          return NotifCompletePage(); },
-        ), 
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
         );
       }
     }
-    if(getStatus == "counter"){
+    if (getStatus == "counter") {
       print("in second if");
-      if(transaction['buyer_email'] == user.email){
-        Navigator.push(context,
-        MaterialPageRoute(
-          builder: (context) {
-          return CounterOfferPage(transaction, transaction_reference, notification_reference); },
-        ), 
+      if (transaction['buyer_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return CounterOfferPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
         );
-      }
-      else{
-        Navigator.push(context,
-        MaterialPageRoute(
-          builder: (context) {
-          return NotifCompletePage(); },
-        ), 
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
         );
       }
     }
@@ -78,6 +84,7 @@ class _NotificationPageState extends State<NotificationPage> {
     await FirebaseFirestore.instance
         .collection('notifications')
         .where('recipient', isEqualTo: user.email)
+        .orderBy('timestamp', descending: true)
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(
@@ -177,6 +184,28 @@ class _NotificationPageState extends State<NotificationPage> {
                   // );
                 },
                 child: Text('View Full Message'),
+              ),
+              TextButton(
+                //textColor: Colors.black,
+                onPressed: () async {
+                  final document = FirebaseFirestore.instance
+                      .collection('notifications')
+                      .doc(index)
+                      .delete()
+                      .then((_) {
+                    print("Successfully deleted notification.");
+                  });
+                  Navigator.popUntil(context, (route) => false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return NotificationPage();
+                      },
+                    ),
+                  );
+                },
+                child: Text('Delete Notification'),
               ),
             ],
           ),
@@ -309,8 +338,14 @@ class _NotificationPageState extends State<NotificationPage> {
                           title: GetHeader(
                             newHeader: myNotificationRefernces[index],
                           ),
-                          subtitle: GetMessage(
-                            newMessage: myNotificationRefernces[index],
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GetDate(newDate: myNotificationRefernces[index]),
+                              GetMessage(
+                                newMessage: myNotificationRefernces[index],
+                              )
+                            ],
                           ),
                           trailing: Icon(
                             Icons.square_outlined,

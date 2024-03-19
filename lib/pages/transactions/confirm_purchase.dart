@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class ConfirmPurchasePage extends StatefulWidget {
   final Map<String, dynamic> forSaleBook;
@@ -35,37 +35,39 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
   ConfirmPurchasePageState(this.forSaleBook, this.sellerName, this.buyerName,
       this.buyerEmail, this.sellerEmail);
 
-  Future confirmUniqueCode(int code) async {
-    List<dynamic> references = [];
-    await FirebaseFirestore.instance
-        .collection('transactions')
-        .where('transaction_ID', isEqualTo: code)
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              //print(document.reference.id);
-              references.add(document.reference.id);
-            },
-          ),
-        );
-    if (references.length > 1) {
-      return false;
-    } else {
-      return true;
-    }
-  }
 
-  Future codeGenerator() async {
-    int code = Random().nextInt(899999) + 100000;
-    bool unique = await confirmUniqueCode(code);
-    if (unique == true) {
-      return code;
-    } else {
-      codeGenerator();
-    }
-    // print(code);
-  }
+  // Future confirmUniqueCode(int code) async {
+  //   List<dynamic> references = [];
+  //   await FirebaseFirestore.instance
+  //       .collection('transactions')
+  //       .where('transaction_ID', isEqualTo: code)
+  //       .get()
+  //       .then(
+  //         (snapshot) => snapshot.docs.forEach(
+  //           (document) {
+  //             //print(document.reference.id);
+  //             references.add(document.reference.id);
+  //           },
+  //         ),
+  //       );
+  //   if (references.length > 1) {
+  //     return false;
+  //   } else {
+  //     return true;
+  //   }
+  // }
+
+
+  // Future codeGenerator() async {
+  //   int code = Random().nextInt(899999) + 100000;
+  //   bool unique = await confirmUniqueCode(code);
+  //   if (unique == true) {
+  //     return code;
+  //   } else {
+  //     codeGenerator();
+  //   }
+  //   // print(code);
+  // }
 
   var forSaleReference = "";
   Future getReferenceIDs() async {
@@ -135,7 +137,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
   }
 
   Future createTransaction() async {
-    int code = await codeGenerator();
+    int code = await idGenerator(6);
     await FirebaseFirestore.instance.collection("transactions").add({
       'seller': sellerName,
       'seller_email': sellerEmail,
@@ -150,9 +152,10 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
         'Price': forSaleBook['Price'],
         'Title': forSaleBook['Title'],
         'Seller': forSaleBook['Seller'],
+        'BookID': forSaleBook['Textbook ID']
       },
       'status': "purchase",
-      'transaction_ID': code
+      'transaction_ID': code,
     });
     sendNotification(code);
     emailSeller(
@@ -188,53 +191,52 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
             ),
           ),
         ),
-      body: 
-      Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                      children: [
-                        Image.network(forSaleBook['Cover'],
-                        scale: 1,),
-                    
-                        SizedBox(width: 20),
-                          
-                        Expanded(
-                              child: Column(
-                                children: [
-                    
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(forSaleBook['Title'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Condition: " + forSaleBook['Condition'],
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
-                    
-                                  SizedBox(height:30),
-                        
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Price: " + forSaleBook['Price'] + " credits",
-                                    style: GoogleFonts.merriweather(
-                                    fontSize: 15,
-                                     ),),
-                                  ),
+        body: Center(
+            child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Expanded(
+              child: Column(children: [
+                Row(
+                  children: [
+                    Image.network(
+                      forSaleBook['Cover'],
+                      scale: 1,
+                    ),
+                    SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              forSaleBook['Title'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Condition: " + forSaleBook['Condition'],
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 30),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Price: " + forSaleBook['Price'] + " credits",
+                              style: GoogleFonts.merriweather(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

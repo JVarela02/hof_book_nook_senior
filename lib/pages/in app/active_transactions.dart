@@ -60,18 +60,18 @@ class _ActTransPageState extends State<ActTransPage> {
         print(data?['seller_email']);
         print(data?['buyer_email']);
         print(data?['seller_email'].compareTo(user.email)); */
-        if (data?['seller_email'] != user.email || data?['buyer_email'] != user.email) {
+        if (data?['seller_email'] == user.email || data?['buyer_email'] == user.email) {
           sellerList.add(data?['seller']);
           buyerList.add(data?['buyer']);
           transIDList.add(data?['transaction_ID']);
           status.add(data?['status']);
         }
       }
-      /*print(transList);
+      print(transList);
       print(sellerList);
       print(buyerList);
-      print(transIDList);
-      print(status); */
+      //print(transIDList);
+      print(status); 
       
        
   }
@@ -131,9 +131,9 @@ class _ActTransPageState extends State<ActTransPage> {
                 future: getTransactions(),
                 builder: (context, snapshot) {
                   return ListView.builder(
-                    itemCount: transList.length,
+                    itemCount: transIDList.length,
                     itemBuilder: ((context, index) {
-                      if (transList.isNotEmpty) {
+                      if (transIDList.isNotEmpty) {
                         return ListTile(
                           /*leading: 
                                 Text(transList[index]), */
@@ -141,7 +141,7 @@ class _ActTransPageState extends State<ActTransPage> {
                                 whoSell(index),
                                  
                           subtitle:
-                                Text("Transaction ID: "+transList[index]),
+                                Text("Transaction ID: "+ transIDList[index].toString()),
                           trailing: Icon(
                             Icons.square_outlined,
                           ),

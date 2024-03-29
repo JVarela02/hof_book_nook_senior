@@ -80,7 +80,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
             " has accepted the proposed meet-up date to complete the purchase of " +
             transactionData['forSale']['Title'] +
             ". You will receive more information on the day of the meet-up on how to complete the transaction",
-        transactionData['seller_'],
+        transactionData['seller_email'],
         transactionData['buyer_email']);
     print("new notification uploaded");
     }

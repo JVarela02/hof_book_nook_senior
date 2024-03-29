@@ -473,7 +473,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
             " has chosen a different meet-up date to complete the purchase of " +
             transactionData['forSale']['Title'] +
             ". Please confirm wether or not the date and time works for you otherwise send a meetup date counter-offer",
-        transactionData['seller_'],
+        transactionData['seller_email'],
         transactionData['buyer_email']);
     print("new notification uploaded");
     }

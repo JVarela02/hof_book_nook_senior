@@ -192,7 +192,8 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       },
       'remainder': priceDifference,
       'status': "offer",
-      'transaction_ID': code
+      'transaction_ID': code,
+      'Meetup': []
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale

@@ -55,14 +55,15 @@ class _HomePageState extends State<HomePage> {
             child: Align(
               alignment: Alignment.centerRight,
               child: GestureDetector(
-                  onTap: ()  async {
+                  onTap: () async {
                     await FirebaseAuth.instance.signOut();
                     Navigator.popUntil(context, (route) => false);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return LoginPage(showRegisterPage: () {  },
+                          return LoginPage(
+                            showRegisterPage: () {},
                           );
                         },
                       ),
@@ -84,7 +85,8 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(10),
               child: ButtonBar(
                 alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min, // this will take space as minimum as posible(to center)
+                mainAxisSize: MainAxisSize
+                    .min, // this will take space as minimum as posible(to center)
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
@@ -94,7 +96,8 @@ class _HomePageState extends State<HomePage> {
                         return HomePage();
                       }));
                     }, // route to account page
-                    child: Text('Home',
+                    child: Text(
+                      'Home',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -108,14 +111,10 @@ class _HomePageState extends State<HomePage> {
                     }, // route to my page ... this page ...
                     child: Column(
                       children: [
-                        Text(
-                          'My'
-                        ),
-                        Text(
-                          'Listings'
-                        ),
-
-                      ],),
+                        Text('My'),
+                        Text('Listings'),
+                      ],
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -127,25 +126,21 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Column(
                       children: [
-                      Text(
-                      'My'
+                        Text('My'),
+                        Text('Account'),
+                      ],
                     ),
-                        Text(
-                          'Account'
-                        ),
-
-                      ],),
                   ),
                   ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return NotificationPage();
-                    }));
-                  }, // route to account page
-                  child: Text('Notifications'),
-                ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return NotificationPage();
+                      }));
+                    }, // route to account page
+                    child: Text('Notifications'),
+                  ),
                 ],
               ),
             ),
@@ -354,7 +349,7 @@ class _ResultsPageState extends State<ResultsPage> {
     String txtAuthorName = data2['Title'] + " By: " + data2['Author'];
     String detailDescription = data2['Description'];
     String link = data2['Cover'];
-    print(textbookName); 
+    print(textbookName);
 
     showDialog(
       context: context,
@@ -381,13 +376,12 @@ class _ResultsPageState extends State<ResultsPage> {
               ),
               TextButton(
                 //textColor: Colors.black,
-                onPressed: 
-                () 
-                async {
+                onPressed: () async {
                   Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return PurchasePage(data2);}));
-                   /*await getUsers();
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return PurchasePage(data2);
+                  }));
+                  /*await getUsers();
                    sendEmail(
                        name: finalName, //current user name
                        email: user.email.toString(), // user's email address
@@ -413,7 +407,7 @@ class _ResultsPageState extends State<ResultsPage> {
     if (widget.dropdownValue == "ISBN") {
       await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('ISBN', isEqualTo: widget.searchCriteria.trim().toString())
+          .where('ISBN', isEqualTo: widget.searchCriteria.toString())
           //.where('Seller', isNotEqualTo: user.email)
           .where('InNegotiations', isEqualTo: false)
           .get()
@@ -429,7 +423,8 @@ class _ResultsPageState extends State<ResultsPage> {
     if (widget.dropdownValue == "Author") {
       await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('Author Parts', arrayContains: widget.searchCriteria.trim.toString().toLowerCase())
+          .where('Author Parts',
+              arrayContains: widget.searchCriteria.toString().toLowerCase())
           //.where('Seller', isNotEqualTo: user.email)
           .where('InNegotiations', isEqualTo: false)
           .get()
@@ -448,7 +443,8 @@ class _ResultsPageState extends State<ResultsPage> {
           .collection('textbooks')
           .where('InNegotiations', isEqualTo: false)
           //.where('Seller', isEqualTo: user.email)
-          .where('Title Parts', arrayContains: widget.searchCriteria.trim.toString().toLowerCase())
+          .where('Title Parts',
+              arrayContains: widget.searchCriteria.toString().toLowerCase())
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(
@@ -484,16 +480,16 @@ class _ResultsPageState extends State<ResultsPage> {
             itemBuilder: ((context, index) {
               if (searchRefernces.isNotEmpty) {
                 return ListTile(
-                  leading: GetCover(coverForSale: searchRefernces[index]), // This will turn into photo of textbook
+                  leading: GetCover(
+                      coverForSale: searchRefernces[
+                          index]), // This will turn into photo of textbook
                   title: GetTitle(
                     titleForSale: searchRefernces[index],
-                  ), 
+                  ),
                   subtitle:
                       GetCondition(conditionForSale: searchRefernces[index]),
                   trailing: GetPrice(priceForSale: searchRefernces[index]),
-                  onTap: () => {
-                    showDialogBox(searchRefernces[index])
-                  }, 
+                  onTap: () => {showDialogBox(searchRefernces[index])},
                 );
               } else {
                 print("No Results found" + searchRefernces[index]);

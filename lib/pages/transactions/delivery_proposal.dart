@@ -35,7 +35,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
   var times = ["Select Exchange Time","Please select a date and location first"];
   var locations = ["Select Location", "Adams Hall", "Alliance Hall", "Au Bon Pain", "Axinn Library Reception","Barnard Hall", 
     "Berliner Hall", "Bill of Rights Hall",
-    "Bits and Bytes", "Breslin Hall", "Brower Hall", "Calkins Hall", "Colonial Square", "Constitution Hall",
+    "Bits & Bytes", "Breslin Hall", "Brower Hall", "Calkins Hall", "Colonial Square", "Constitution Hall",
     "C.V Starr Hall", "Davison Hall", 
     "Dunkin' in the Quad", "Einstein Bagels", 
     "Emily Lowe Hall", "Enterprise Hall", "Estabrook Hall", "Freshens", "Gittleson Hall", "Graduate Residence Hall",
@@ -419,7 +419,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
         .collection('transactions')
         .doc(transactionReference);
 
-    if(user == transactionData['seller']){
+    if(user.email == transactionData['seller_email']){
       transaction_document.update({
         'status': "Meetup-Offer",
       });
@@ -431,7 +431,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
     
      transaction_document.update({
-      'Meetup': [location,meet,time],
+      'meetup': [location,meet,time],
     });
 
     print("transactions updated");
@@ -451,7 +451,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
 
     // create a new notification for opposite person
-    if(user == transactionData['seller']){
+    if(user.email == transactionData['seller_email']){
     sendNotification(
         transactionData['transaction_ID'],
         transactionData['seller'] +
@@ -480,7 +480,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
 
 
     // send alternative person email
-    if(user == transactionData['seller']){
+    if(user.email == transactionData['seller_email']){
       await emailNotification(
           header: "Update for transaction " +
               transactionData['transaction_ID'].toString(),
@@ -556,10 +556,23 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
                               ),),
                           Image.network(transactionData['forSale']['Cover'], scale: 3,),
                           SizedBox(width: 10,),
-                          Text(transactionData['forSale']['Title'] + " by " + transactionData['forSale']['Author'],
-                            style: GoogleFonts.merriweather(
-                                fontSize: 15,
-                              ),)
+                          ConstrainedBox(
+                            constraints: BoxConstraints.tightFor(width: 275),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(transactionData['forSale']['Title'],
+                                  style: GoogleFonts.merriweather(
+                                      fontSize: 15,
+                                    ),
+                                    textAlign: TextAlign.center,),
+                                Text("by " + transactionData['forSale']['Author'],
+                                  style: GoogleFonts.merriweather(
+                                    fontSize: 15,
+                                  ),)
+                              ],
+                            ),
+                          )
                         ],
                       ),
 

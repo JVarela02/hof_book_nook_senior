@@ -57,7 +57,9 @@ class NotifCompletePageState extends State<NotifCompletePage> {
                             style: GoogleFonts.merriweather(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            ),),
+                            ),
+                            textAlign: TextAlign.center,
+                            ),
                           ),
                         ]
                       ),

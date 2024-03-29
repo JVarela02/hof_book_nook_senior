@@ -1,16 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
+//import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
-import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
+import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
-import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
 
 class ActTransPage extends StatefulWidget {
   const ActTransPage({super.key});
@@ -20,6 +18,143 @@ class ActTransPage extends StatefulWidget {
 }
 
 class _ActTransPageState extends State<ActTransPage> {
+
+    whereTo(var transaction, transaction_reference, notification_reference) {
+    print('in whereTo');
+    var getStatus = transaction['status'];
+    print('Status of transaction is ' + getStatus);
+
+    // Offer Page Route
+    if (getStatus == "offer") {
+      print("in first if");
+      if (transaction['seller_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return OfferReceivedPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+    else if (getStatus == "counter") {
+      print("in second if");
+      if (transaction['buyer_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return CounterOfferPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+    else if(getStatus == "purchase" || getStatus == "exchange"){
+      if (transaction['seller_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DeliveryProposalPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+    else if(getStatus == "incomplete"){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DeliveryProposalPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+    }
+
+    else if(getStatus == "Meetup-Offer"){
+      if(transaction['buyer_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MeetupConfirmPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+
+    else if(getStatus == "Meetup-Counter"){
+      if(transaction['seller_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MeetupConfirmPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+
+  }
+
    final user = FirebaseAuth.instance.currentUser!;
     List<dynamic> sellerList = [];
     List<dynamic> buyerList = [];
@@ -27,6 +162,9 @@ class _ActTransPageState extends State<ActTransPage> {
     List<dynamic> userTrans = [];
     List<dynamic> transIDList = [];
     List<dynamic> status = [];
+    List<dynamic> titleList = [];
+    List<dynamic> sellerEmailList = [];
+    List<dynamic> fullTransactionList = [];
     List<ElevatedButton> buttonsList = <ElevatedButton>[];
 
   /*List<Widget> _buildButtonsWithNames() {
@@ -60,18 +198,22 @@ class _ActTransPageState extends State<ActTransPage> {
         print(data?['seller_email']);
         print(data?['buyer_email']);
         print(data?['seller_email'].compareTo(user.email)); */
-        if (data?['seller_email'] == user.email || data?['buyer_email'] == user.email) {
+        if ((data?['seller_email'] == user.email || data?['buyer_email'] == user.email) && data?['status'] != "canceled") {
           sellerList.add(data?['seller']);
+          sellerEmailList.add(data?['seller_email']);
           buyerList.add(data?['buyer']);
           transIDList.add(data?['transaction_ID']);
           status.add(data?['status']);
+          titleList.add(data?['forSale']['Title']);
+          fullTransactionList.add(data);
         }
       }
-      print(transList);
-      print(sellerList);
-      print(buyerList);
-      //print(transIDList);
-      print(status); 
+      // print(transList);
+      // print(sellerList);
+      // print(buyerList);
+      // //print(transIDList);
+      // print(status); 
+      //print(fullTransactionList);
       
        
   }
@@ -79,10 +221,11 @@ class _ActTransPageState extends State<ActTransPage> {
   }
 
   Text whoSell(index) {
-      if(user.email == sellerList[index]) {
-        return(Text("You are selling to " + buyerList[index]));
+      //print("seller is " + sellerEmailList[index]);
+      if(user.email == sellerEmailList[index]) {
+        return(Text("You are selling " + titleList[index] + " to " + buyerList[index]));
       } else {
-        return(Text("You are buying from " + sellerList[index]));
+        return(Text("You are buying " + titleList[index] + " from " + sellerList[index]));
       }
 
       }
@@ -145,9 +288,11 @@ class _ActTransPageState extends State<ActTransPage> {
                           trailing: Icon(
                             Icons.square_outlined,
                           ),
-                          onTap: () =>
-                              print("Hi")
+                          onTap: () {
+                              print("data being passed is " + transList[index]);
+                              whereTo(fullTransactionList[index], transList[index], "0");
                               //showDialogBox(transIDList[index]),
+                          }
                         );
                       } else {
                         return SizedBox(height: 20);

@@ -156,7 +156,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
       },
       'status': "purchase",
       'transaction_ID': code,
-      'Meetup': []
+      'meetup': []
     });
     sendNotification(code);
     emailSeller(

@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class OfferReceivedPage extends StatefulWidget {
@@ -61,52 +62,27 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         );
   }
 
-  void showDialogBox() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Expanded(
-          child: AlertDialog(
-            title: Text('End of Demo'),
-            content: Text(
-                'This concludes our demo next step is setting up a meet-up'),
-            actions: [
-              TextButton(
-                //textColor: Colors.black,
-                onPressed: () {
-                  Navigator.popUntil(context, (route) => false);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return NotificationPage();
-                      },
-                    ),
-                  );
-                },
-                child: Text('Mark as Read'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   offerAccepted() {
-    // Sends them to set up meet-up page
+    // Updates status to exchange 
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
         .doc(transactionReference);
     transaction_document.update({
-      'status': "meet-up",
+      'status': "exchange",
     });
 
-    // update transaction step to 5
-    transaction_document.update({'step': 5});
-    print("transactions updated");
+    // pop this page and transfer to set-up meet-up page 
+    Navigator.of(context).pop();
+    Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DeliveryProposalPage(
+                  transactionData, transactionReference, notificationReference);
+            },
+          ),
+        );
 
-    showDialogBox();
     print("ahh");
     ;
   }
@@ -120,12 +96,10 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'status': "counter",
     });
 
-    // update transaction step to 2
-    transaction_document.update({'step': 2});
-
     print("transactions updated");
 
     // update notification to "read"
+    if(notificationReference != 0 ){
     final notification_document = FirebaseFirestore.instance
         .collection('notifications')
         .doc(notificationReference);
@@ -133,6 +107,10 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'read': true,
     });
     print("notification updated");
+    }
+    else{
+      print("ha nope no notification");
+    }
 
     // create a new notification for buyer
     sendNotification(

@@ -8,6 +8,8 @@ import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
+import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
@@ -54,7 +56,7 @@ class _NotificationPageState extends State<NotificationPage> {
         );
       }
     }
-    if (getStatus == "counter") {
+    else if (getStatus == "counter") {
       print("in second if");
       if (transaction['buyer_email'] == user.email) {
         Navigator.push(
@@ -77,6 +79,88 @@ class _NotificationPageState extends State<NotificationPage> {
         );
       }
     }
+    else if(getStatus == "purchase" || getStatus == "exchange"){
+      if (transaction['seller_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DeliveryProposalPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+    else if(getStatus == "incomplete"){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DeliveryProposalPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+    }
+
+    else if(getStatus == "Meetup-Offer"){
+      if(transaction['buyer_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MeetupConfirmPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+
+    else if(getStatus == "Meetup-Counter"){
+      if(transaction['seller_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MeetupConfirmPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+
   }
 
   //get textbooks

@@ -12,6 +12,7 @@ import 'package:the_hof_book_nook/pages/in%20app/wishlist_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/forgot_pw_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/credit_page.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 //import 'package:the_hof_book_nook/read data/get_account_info.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 
@@ -305,7 +306,25 @@ class _accountPageState extends State<accountPage> {
               ),
             ),
 
+            SizedBox(height: 30,),
 
+            SizedBox(
+              height: 60,
+              width: 300,
+              child: ElevatedButton( 
+                onPressed: () {
+                   Navigator.push(
+                     context, 
+                        MaterialPageRoute(
+                           builder: (context) {
+                           return ActTransPage();
+                          },
+                        ),);},
+                child: Text("View Active Transactions",
+                  style: TextStyle(color: Colors.white),
+                ),         
+              ),
+            ),
           ],
         ),
 

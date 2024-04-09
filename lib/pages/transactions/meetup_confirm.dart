@@ -150,6 +150,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(transactionData['meetup']);
     return Scaffold(
         appBar: AppBar(
           title: FittedBox(
@@ -203,7 +204,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold
                               ),),
-                          Text(transactionData['Meetup'][0] ,
+                          Text(transactionData['meetup'][0] ,
                             style: GoogleFonts.merriweather(
                                 fontSize: 15,
                               ),)
@@ -220,7 +221,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold
                               ),),
-                          Text(transactionData['Meetup'][1] ,
+                          Text(transactionData['meetup'][1] ,
                             style: GoogleFonts.merriweather(
                                 fontSize: 15,
                               ),)
@@ -237,7 +238,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold
                               ),),
-                          Text(transactionData['Meetup'][2] ,
+                          Text(transactionData['meetup'][2] ,
                             style: GoogleFonts.merriweather(
                                 fontSize: 15,
                               ),)
@@ -245,6 +246,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
                       ),
 
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           ElevatedButton(
                             onPressed: () {
@@ -263,7 +265,7 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
 
                           ElevatedButton(
                             onPressed: () {
-                              ;
+                              rejectDate();
                               //getTimes(locationValue, selectedDateText);
                             },
                             child: Text("Create Alternative\nMeet-Up Appointment",

@@ -12,7 +12,7 @@ import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 // import 'package:the_hof_book_nook/read%20data/get_textbook_info.dart';
 // import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});
@@ -50,15 +50,95 @@ class _SupportPageState extends State<SupportPage> {
     return finalName;
   }
 
-  Future confirmNoEmpty() async {
-    if(_transactionIDController.text.toString().isEmpty | _situationController.text.toString().isEmpty) {
-      showEmptyErrorResponseDialogBox();
-    }
-    else{
-      var userName = await getfullName();
-      emailSupport(username: userName, transaction: _transactionIDController.text.toString(), user_email: user.email.toString(), message: _situationController.text.toString());
+  List<String> myTransactionReferences = [];
+
+  Future getBuyerTransactions() async {
+    await FirebaseFirestore.instance
+        .collection('transactions')
+        .where('buyer_email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              var data = document.data();
+              var transaction_id = data["transaction_ID"].toString();
+              print(transaction_id);
+              myTransactionReferences.add(transaction_id);
+            },
+          ),
+        );
+  }
+
+  Future getSellerTransactions() async {
+    await FirebaseFirestore.instance
+        .collection('transactions')
+        .where('seller_email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              var data = document.data();
+              var transaction_id = data["transaction_ID"].toString();
+              print(transaction_id);
+              myTransactionReferences.add(transaction_id);
+            },
+          ),
+        );
+  }
+
+  Future get_transaction_id(element) async {
+    CollectionReference transactions =
+        FirebaseFirestore.instance.collection('transactions');
+
+    var the_id = transactions.doc(element).get();
+    return the_id;
+  }
+
+  Future errorChecking() async {
+    bool check_id = false;
+
+    var typed_id = _transactionIDController.text.toString();
+    for (var element in myTransactionReferences) {
+      if (typed_id == element) {
+        check_id = true;
+      } else {
+        print("nope");
+      }
     }
 
+    //if (check_id == true) {
+    //  print("YES IT IS HAHA");
+    //} else {
+    //  print("NO SIR");
+    //}
+    var sit_text = _situationController.text.toString();
+    var id_text = _transactionIDController.text.toString();
+
+    if (_transactionIDController.text.toString().isEmpty |
+        _situationController.text.toString().isEmpty) {
+      showEmptyErrorResponseDialogBox();
+    } else if (check_id == false) {
+      showWrongIdDialogBox();
+    } else if ((sit_text.contains('.') |
+        sit_text.contains('[') |
+        sit_text.contains(']') |
+        sit_text.contains('*') |
+        sit_text.contains('`'))) {
+      showUnallowedCharactersBox();
+    } else if ((sit_text.contains('.') |
+        id_text.contains('[') |
+        id_text.contains(']') |
+        id_text.contains('*') |
+        id_text.contains('`'))) {
+      showUnallowedCharactersBox();
+    } else {
+      var userName = await getfullName();
+      emailSupport(
+          username: userName,
+          transaction: _transactionIDController.text.toString(),
+          user_email: user.email.toString(),
+          message: _situationController.text.toString());
+    }
   }
 
   Future emailSupport({
@@ -85,7 +165,7 @@ class _SupportPageState extends State<SupportPage> {
         'template_params': {
           'username': username,
           'transaction': transaction,
-          'user_email' : user_email,
+          'user_email': user_email,
           'message': message,
         }
       }),
@@ -117,7 +197,7 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-    void showEmptyErrorResponseDialogBox() async {
+  void showEmptyErrorResponseDialogBox() async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -140,15 +220,61 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-    @override
+  void showWrongIdDialogBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Expanded(
+          child: AlertDialog(
+            title: Text('ERROR'),
+            content: Text('Please enter your valid transaction ID'),
+            actions: [
+              TextButton(
+                //textColor: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OKAY'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void showUnallowedCharactersBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Expanded(
+          child: AlertDialog(
+            title: Text('ERROR'),
+            content: Text('Please do not use the following characters: .[]*`'),
+            actions: [
+              TextButton(
+                //textColor: Colors.black,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OKAY'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const FittedBox(
           child: Padding(
             padding: EdgeInsets.only(left: 1.0),
-            child: Align(
-                alignment: Alignment.centerLeft, child: Text("Support")),
+            child:
+                Align(alignment: Alignment.centerLeft, child: Text("Support")),
           ),
         ),
         actions: [
@@ -181,14 +307,14 @@ class _SupportPageState extends State<SupportPage> {
         ],
       ),
       body: SafeArea(
-      child: Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Container(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 207, 230, 247),
                       border: Border.all(
@@ -206,14 +332,12 @@ class _SupportPageState extends State<SupportPage> {
                       ),
                     ),
                   ),
-            ),
-      
-            SizedBox(height:15),
-      
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Container(
-                height: 400,
+                ),
+                SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    height: 400,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 207, 230, 247),
                       border: Border.all(
@@ -231,29 +355,29 @@ class _SupportPageState extends State<SupportPage> {
                       ),
                     ),
                   ),
-            ),
-      
-            SizedBox(height:15),
-      
-              SizedBox(
-                height: 60,
-                width: 300,
-                child: ElevatedButton( 
-                  onPressed: () async {
-                    confirmNoEmpty()
-                    // emailSupport(username: "Must Fix", user_email: user.email.toString(), transaction: _transactionIDController.text.toString(), message: _situationController.text.toString())
-                     ;},
-                  child: Text("Email Support?",
-                    style: TextStyle(color: Colors.white),
-                  ),         
                 ),
-              ),
-      
-          ],
+                SizedBox(height: 15),
+                SizedBox(
+                  height: 60,
+                  width: 300,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await getBuyerTransactions();
+                      await getSellerTransactions();
+                      errorChecking();
+                      // emailSupport(username: "Must Fix", user_email: user.email.toString(), transaction: _transactionIDController.text.toString(), message: _situationController.text.toString())
+                    },
+                    child: Text(
+                      "Email Support?",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-    ),
-      ),
-      );
+    );
   }
 }

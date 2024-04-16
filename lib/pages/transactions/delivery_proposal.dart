@@ -559,7 +559,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
                           ConstrainedBox(
                             constraints: BoxConstraints.tightFor(width: 275),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(transactionData['forSale']['Title'],
                                   style: GoogleFonts.merriweather(

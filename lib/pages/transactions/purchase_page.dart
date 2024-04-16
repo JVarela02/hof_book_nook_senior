@@ -56,6 +56,36 @@ class _PurchasePageState extends State<PurchasePage> {
     //print(buyerBooks);
   }
 
+  List<dynamic> creditIDList = [];
+  var credits;
+  Future getCreditID() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              creditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      //print(credits);
+      //print(creditIDList[0]);
+      //print(credits.runtimeType);
+      //print("I AM IN GETCREDITID");
+      creditIDList.add(credits);
+      //print(creditIDList);
+       
+  }
+
+  }
   List<dynamic> wishBooks = [];
   var wishISBN;
 
@@ -294,7 +324,35 @@ class _PurchasePageState extends State<PurchasePage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            confirmPurchasePageRoute();
+                            getCreditID();
+                            //print(creditIDList[1].runtimeType);
+                            //print(itemID['Price'].runtimeType);
+                            int price = int.parse(itemID['Price']);
+                            if(creditIDList[1] >= price) {
+                              confirmPurchasePageRoute();
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Expanded(
+                                      child: AlertDialog(
+                                        title: Text("No Money :("),
+                                        content: Text("Broke Ass"),
+                                        actions: [
+                                          TextButton(
+                                            //textColor: Colors.black,
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              //print("BROKE MF");
+                            }
                           }, // route to account page
                           child: Text(
                             'Purchase with Credits',
@@ -337,7 +395,35 @@ class _PurchasePageState extends State<PurchasePage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            confirmExchangePageRoute();
+                            getCreditID();
+                            //print(creditIDList[1].runtimeType);
+                            //print(itemID['Price'].runtimeType);
+                            int price = int.parse(difference);
+                            if(credits >= price) {
+                              confirmPurchasePageRoute();
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Expanded(
+                                      child: AlertDialog(
+                                        title: Text("No Money :("),
+                                        content: Text("Broke Ass"),
+                                        actions: [
+                                          TextButton(
+                                            //textColor: Colors.black,
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              // print("BROKE MF");
+                            }
                           }, // route to account page
                           child: Text(
                             'Exchange',

@@ -103,6 +103,9 @@ class _CreditPageState extends State<CreditPage> {
           child: Column(
             children: [
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -189,6 +192,9 @@ class _CreditPageState extends State<CreditPage> {
                   },
               child: const Text("Buy Five Dollars")),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -266,6 +272,9 @@ class _CreditPageState extends State<CreditPage> {
                   },
               child: const Text("Buy Fifteen Dollars")),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -343,6 +352,9 @@ class _CreditPageState extends State<CreditPage> {
                   },
               child: const Text("Buy Twenty Dollars")),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -420,6 +432,9 @@ class _CreditPageState extends State<CreditPage> {
                   },
               child: const Text("Buy Fifty Dollars")),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -497,6 +512,9 @@ class _CreditPageState extends State<CreditPage> {
                   },
               child: const Text("Buy Seventy Five Dollars")),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
               onPressed: () => {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -573,6 +591,36 @@ class _CreditPageState extends State<CreditPage> {
                     )
                   },
               child: const Text("Buy One Hundred Dollars")),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
+                  onPressed: () async {
+                            getCreditID();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Expanded(
+                                      child: AlertDialog(
+                                        title: Text("Chungus"),
+                                        content: Text("Current Credits: " + creditIDList[1].toString() + "\n\nCurrent Credits in \nTransactions: "),
+                                        actions: [
+                                          TextButton(
+                                            //textColor: Colors.black,
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Text('Close'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                    print('Chungus');
+                  },
+                  child: const Text("View Credits"),
+              ),
               ]
             )
           )

@@ -282,3 +282,17 @@ class GetNegotiations extends StatelessWidget {
     );
   }
 }
+
+Future GetSeller(var reference) async{
+  var seller_email;
+  var collection = FirebaseFirestore.instance.collection('textbooks');
+    var docSnapshot = await collection.doc(reference).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      seller_email = data?['Seller'];
+    }
+    else{
+      seller_email = "null";
+    }
+  return seller_email;
+}

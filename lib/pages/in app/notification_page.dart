@@ -13,6 +13,39 @@ import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
+import 'package:the_hof_book_nook/repeated_functions.dart';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workmanager/workmanager.dart';
+
+const theTask = "simpleTask";
+int transactionid = 566702;
+
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    switch (task) {
+      case theTask:
+        try {
+          print("it's doing the task");
+          sendNotification(
+            transactionid,
+            "Testing Notifications",
+            "haha kill me please",
+            "mcyriac1@pride.hofstra.edu",
+            "mcyriac1@pride.hofstra.edu",
+          );
+          print(theTask);
+        } catch (e) {
+          print("IM IN THE CATCH BLOCK!!!");
+          print(e);
+        }
+        break;
+    }
+    throw 'hehe its throwing i guess';
+  });
+}
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -55,8 +88,7 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if (getStatus == "counter") {
+    } else if (getStatus == "counter") {
       print("in second if");
       if (transaction['buyer_email'] == user.email) {
         Navigator.push(
@@ -78,8 +110,7 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if(getStatus == "purchase" || getStatus == "exchange"){
+    } else if (getStatus == "purchase" || getStatus == "exchange") {
       if (transaction['seller_email'] == user.email) {
         Navigator.push(
           context,
@@ -100,21 +131,18 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if(getStatus == "incomplete"){
+    } else if (getStatus == "incomplete") {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DeliveryProposalPage(
-                  transaction, transaction_reference, notification_reference);
-            },
-          ),
-        );
-    }
-
-    else if(getStatus == "Meetup-Offer"){
-      if(transaction['buyer_email'] == user.email){
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return DeliveryProposalPage(
+                transaction, transaction_reference, notification_reference);
+          },
+        ),
+      );
+    } else if (getStatus == "Meetup-Offer") {
+      if (transaction['buyer_email'] == user.email) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -124,9 +152,8 @@ class _NotificationPageState extends State<NotificationPage> {
             },
           ),
         );
-      }
-      else{
-         Navigator.push(
+      } else {
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -135,10 +162,8 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-
-    else if(getStatus == "Meetup-Counter"){
-      if(transaction['seller_email'] == user.email){
+    } else if (getStatus == "Meetup-Counter") {
+      if (transaction['seller_email'] == user.email) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -148,9 +173,8 @@ class _NotificationPageState extends State<NotificationPage> {
             },
           ),
         );
-      }
-      else{
-         Navigator.push(
+      } else {
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -160,7 +184,6 @@ class _NotificationPageState extends State<NotificationPage> {
         );
       }
     }
-
   }
 
   //get textbooks
@@ -350,6 +373,9 @@ class _NotificationPageState extends State<NotificationPage> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
+                      Workmanager().initialize(callbackDispatcher);
+                      Workmanager().registerOneOffTask("1", theTask,
+                          initialDelay: Duration(seconds: 3));
                       Navigator.of(context).pop();
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {

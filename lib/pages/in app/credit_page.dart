@@ -1,5 +1,7 @@
 //import 'dart:js_util';
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,44 +17,75 @@ import 'package:flutter/material.dart';
 //import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 //import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
+import 'package:camera/camera.dart';
 
 class CreditPage extends StatefulWidget {
   const CreditPage({super.key});
+  //final CameraDescription camera;
 
   @override
   State<CreditPage> createState() => _CreditPageState();
+
 }
 
 class _CreditPageState extends State<CreditPage> {
    final user = FirebaseAuth.instance.currentUser!;
 
-  // This widget is the root of your application.
-//  @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Purchase Credits',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: const MyHomePage(title: 'Purchase Credits'),
-//     );
-//   }
-// }
-
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({Key? key, required this.title}) : super(key: key);
-//   final String title;
-
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-
-//class _MyHomePageState extends State<MyHomePage> {
-  //final user = FirebaseAuth.instance.currentUser!;
-
   List<dynamic> creditIDList = [];
   //List<dynamic> creditsList = [];
   var credits;
+  var firstCamera;
+  late CameraController controller;
+  late Future<void> initControllerFuture;
+
+  Future getCameras() async {
+      final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      CameraPreview(controller);
+      /*await Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DisplayFeedScreen(
+        controllers: controller
+      )))); */
+      showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Expanded(
+                  child: AlertDialog(
+                    title: Text("Chungus"),
+                    content: CameraPreview(controller),
+                    actions: [
+                      TextButton(
+                        //textColor: Colors.black,
+                        onPressed: () async {
+                          await takePicture();
+                          //Navigator.of(context).pop();
+                        },
+                        child: Text('Take Picture'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+      //final image = await controller.takePicture();
+      //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+      //        imagePath: image.path,)));
+      //print(firstCamera);
+  }
+
+  Future takePicture() async {
+    final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      final image = await controller.takePicture();
+      await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+              imagePath: image.path,)));
+      print("WE MADE IT BOYS");
+  }
 
   //get reference ID for credits
   Future getCreditID() async {
@@ -596,7 +629,7 @@ class _CreditPageState extends State<CreditPage> {
                   minimumSize: Size(200,40)
                   ),
                   onPressed: () async {
-                            getCreditID();
+                            await getCreditID();
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -619,12 +652,64 @@ class _CreditPageState extends State<CreditPage> {
                                 );
                     print('Chungus');
                   },
-                  child: const Text("View Credits"),
-              ),
+                  child: const Text("View Credits"),),
+                  ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
+                  onPressed: () async {
+                            await getCameras();
+                  },
+                  child: const Text("BEATING FLUTTER TO DEATH WITH HAMMERS"),),
               ]
             )
           )
         );
   }
 }
+
+class DisplayPictureScreen extends StatelessWidget {
+  final String imagePath;
+
+  const DisplayPictureScreen({super.key, required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Display the Picture')),
+      // The image is stored as a file on the device. Use the Image.file
+      // constructor with the given path to display the image.
+      body: Image.file(File(imagePath)),
+    );
+  }
+}
+
+/*class DisplayFeedScreen extends StatelessWidget {
+  final CameraController controllers;
+
+  const DisplayFeedScreen({super.key, required this.controllers});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Display the Picture')),
+      body: Center(
+        child: Column( 
+        children: [
+          CameraPreview(controllers),
+          ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(200,40)
+                  ),
+                  onPressed: () async {
+                    
+                  },
+                  child: const Text("TAKE PRETTY PICTURE"),
+          ),
+        ]
+        )
+      )
+    );
+  }
+} */
 

@@ -1233,9 +1233,9 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
                         width: 10,
                       ),
                       ConstrainedBox(
-                        constraints: BoxConstraints.tightFor(width: 100),
+                        constraints: BoxConstraints.tightFor(width: 275),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
                               transactionData['forSale']['Title'],

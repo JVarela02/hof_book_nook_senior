@@ -398,6 +398,22 @@ class _ResultsPageState extends State<ResultsPage> {
     );
   }
 
+Future removeLoggedBooks() async{
+    var referenceList = await getTextbookResults();
+    int length = referenceList.length;
+    for(var i = 0; i < length; i++){
+      print(referenceList[i].toString() + "at i = " + i.toString());
+      var seller = await GetSeller(referenceList[i]);
+      if(seller.toString() == user.email.toString()){
+        referenceList.remove(referenceList[i].toString());
+        i--;
+      }
+      else{
+        print("next line");
+      }
+    }
+  }
+
   //get texbooks
   Future getTextbookResults() async {
     if (widget.dropdownValue == "Search Type") {
@@ -453,6 +469,8 @@ class _ResultsPageState extends State<ResultsPage> {
             ),
           );
     }
+    print("done searching going to go remove my books");
+    return searchRefernces;
   }
 
   @override
@@ -471,7 +489,8 @@ class _ResultsPageState extends State<ResultsPage> {
           //Container(
           //child:
           FutureBuilder(
-        future: getTextbookResults(),
+        future: removeLoggedBooks(),
+        //getTextbookResults(),
         builder: (context, snapshot) {
           return ListView.builder(
             itemCount: searchRefernces.length,

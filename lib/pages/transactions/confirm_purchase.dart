@@ -114,7 +114,6 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
     print(response.body);
   }
 
-
   /*Future sendNotification(int transaction_ID) async {
     final notification = <String, dynamic>{
       "header":
@@ -135,9 +134,9 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
     db.collection("notifications").doc().set(notification);
   } */
 
-
   Future createTransaction() async {
     int code = await idGenerator(6);
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     await FirebaseFirestore.instance.collection("transactions").add({
       'seller': sellerName,
       'seller_email': sellerEmail,
@@ -156,17 +155,20 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
       },
       'status': "purchase",
       'transaction_ID': code,
-      'meetup': []
+      'meetup': [],
+      'timestamp': timestamp
     });
-    
-    sendNotification(code,
-      buyerName +
-          " wants to buy your Book!",
+
+    sendNotification(
+      code,
+      buyerName + " wants to buy your Book!",
       buyerName +
           " wants to purchase your copy of " +
-          forSaleBook["Title"] + "Please set up a meetup time.",
+          forSaleBook["Title"] +
+          "Please set up a meetup time.",
       sellerEmail,
-      buyerEmail,);
+      buyerEmail,
+    );
 
     emailSeller(
         user_name: buyerName,

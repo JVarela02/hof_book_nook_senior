@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
@@ -88,29 +89,29 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   }
 
   offerRejected() async {
+    print("in offer rejected");
     // update transaction status to "counter-offer"
-    final transaction_document = FirebaseFirestore.instance
-        .collection('transactions')
-        .doc(transactionReference);
-    transaction_document.update({
-      'status': "counter",
-    });
+    final transaction_document = FirebaseFirestore.instance.collection('transactions').doc(transactionReference);
+    transaction_document.update({'status': "counter",});
+
+    print("updated status");
+
+    // Update for Exchange Textbook inNegotiations status to False 
+    await findTextbook(transactionData['forExchange']['Textbook ID'], transactionData['buyer_email']);
+    print("found the textbook");
+    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
+    print("got document");
+    forExchange_document.update({'InNegotiations': false, });
+
+    print("changed book status");
+
+    // delete forExchange from the transaction so it no longer presents as an exchange in confirmation page 
+    transaction_document.update(<String, dynamic>{"forExchange": FieldValue.delete(),});
+      //{'forExchange': FieldValue.delete()});
+    
+    print("deleted forExchange");
 
     print("transactions updated");
-
-    // update notification to "read"
-    if(notificationReference != 0 ){
-    final notification_document = FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(notificationReference);
-    notification_document.update({
-      'read': true,
-    });
-    print("notification updated");
-    }
-    else{
-      print("ha nope no notification");
-    }
 
     // create a new notification for buyer
     sendNotification(
@@ -139,20 +140,33 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         receiver_email: transactionData['buyer_email']);
     print("email sent");
 
-
-    // Update for Exchange Textbook inNegotiations status to False 
-    await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['buyer']);
-    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
-      forExchange_document.update({'InNegotiations': false, });
-
-
-    // send back to navigation page
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return NotificationPage();
-    }));
+    // update notification to "read" and send back to correct page
+    if(notificationReference != "0" ){
+      final notification_document = FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationReference);
+      notification_document.update({
+        'read': true,
+      });
+      print("notification updated");
+      // send back to navigation page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return NotificationPage();
+      }));
+    }
+    else{
+      print("ha nope no notification");
+      // send back to transaction page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
+      
+    }
+    
   }
 
   @override

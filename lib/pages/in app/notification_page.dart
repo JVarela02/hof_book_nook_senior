@@ -13,45 +13,9 @@ import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
-<<<<<<< HEAD
 import 'package:cloud_functions/cloud_functions.dart';
 
 FirebaseFunctions functions = FirebaseFunctions.instance;
-=======
-import 'package:the_hof_book_nook/repeated_functions.dart';
-
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
-
-const theTask = "simpleTask";
-int transactionid = 566702;
-
-@pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    switch (task) {
-      case theTask:
-        try {
-          print("it's doing the task");
-          sendNotification(
-            transactionid,
-            "Testing Notifications",
-            "haha kill me please",
-            "mcyriac1@pride.hofstra.edu",
-            "mcyriac1@pride.hofstra.edu",
-          );
-          print(theTask);
-        } catch (e) {
-          print("IM IN THE CATCH BLOCK!!!");
-          print(e);
-        }
-        break;
-    }
-    throw 'hehe its throwing i guess';
-  });
-}
->>>>>>> 1dddbc6fb2ee748d0a2760c6f61e6a71944a585c
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -394,13 +358,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
-<<<<<<< HEAD
                       getStuff();
-=======
-                      Workmanager().initialize(callbackDispatcher);
-                      Workmanager().registerOneOffTask("1", theTask,
-                          initialDelay: Duration(seconds: 3));
->>>>>>> 1dddbc6fb2ee748d0a2760c6f61e6a71944a585c
                       Navigator.of(context).pop();
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {

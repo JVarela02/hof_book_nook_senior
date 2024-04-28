@@ -13,6 +13,7 @@ import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 // import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
+import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});
@@ -138,6 +139,14 @@ class _SupportPageState extends State<SupportPage> {
           transaction: _transactionIDController.text.toString(),
           user_email: user.email.toString(),
           message: _situationController.text.toString());
+
+      sendNotification(
+        123456,
+        "Testing Notifications",
+        "haha kill me please",
+        "mcyriac1@pride.hofstra.edu",
+        "mcyriac1@pride.hofstra.edu",
+      );
     }
   }
 

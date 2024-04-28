@@ -89,13 +89,27 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   }
 
   offerRejected() async {
+    print("in offer rejected");
     // update transaction status to "counter-offer"
-    final transaction_document = FirebaseFirestore.instance
-        .collection('transactions')
-        .doc(transactionReference);
-    transaction_document.update({
-      'status': "counter",
-    });
+    final transaction_document = FirebaseFirestore.instance.collection('transactions').doc(transactionReference);
+    transaction_document.update({'status': "counter",});
+
+    print("updated status");
+
+    // Update for Exchange Textbook inNegotiations status to False 
+    await findTextbook(transactionData['forExchange']['Textbook ID'], transactionData['buyer_email']);
+    print("found the textbook");
+    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
+    print("got document");
+    forExchange_document.update({'InNegotiations': false, });
+
+    print("changed book status");
+
+    // delete forExchange from the transaction so it no longer presents as an exchange in confirmation page 
+    transaction_document.update(<String, dynamic>{"forExchange": FieldValue.delete(),});
+      //{'forExchange': FieldValue.delete()});
+    
+    print("deleted forExchange");
 
     print("transactions updated");
 
@@ -125,12 +139,6 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         receiver_name: transactionData['buyer'],
         receiver_email: transactionData['buyer_email']);
     print("email sent");
-
-
-    // Update for Exchange Textbook inNegotiations status to False 
-    await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['buyer']);
-    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
-      forExchange_document.update({'InNegotiations': false, });
 
     // update notification to "read" and send back to correct page
     if(notificationReference != "0" ){

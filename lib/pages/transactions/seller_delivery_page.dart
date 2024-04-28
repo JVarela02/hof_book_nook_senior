@@ -76,7 +76,7 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
           return Expanded(
             child: AlertDialog(
               title: Text('Already Delivered'),
-              content: Text('You have already marked this book as delivered.\n Please use the other button to confirm receipt of the exchanged book.\n Thank you!'),
+              content: Text('You have already marked this book as delivered.\nPlease use the other button to confirm receipt of the exchanged book.\nThank you!'),
             ),
           );
       }
@@ -84,7 +84,7 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
           return Expanded(
             child: AlertDialog(
               title: Text('Deliver Product First'),
-              content: Text('You must deliver your product first in order to mark the receipt of an exchange item.\n Please use the other button to confirm the delivery.\n Thank you!'),
+              content: Text('You must deliver your product first in order to mark the receipt of an exchange item.\nPlease use the other button to confirm the delivery.\nThank you!'),
             ),
           );
       }

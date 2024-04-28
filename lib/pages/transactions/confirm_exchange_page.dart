@@ -177,7 +177,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': forSaleBook['Price'],
         'Title': forSaleBook['Title'],
         'Seller': forSaleBook['Seller'],
-        'BookID': forSaleBook['Textbook ID']
+        'Textbook ID': forSaleBook['Textbook ID']
       },
       'forExchange': {
         'Author': exchangeBook['Author'],
@@ -188,7 +188,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': exchangeBook['Price'],
         'Title': exchangeBook['Title'],
         'Seller': exchangeBook['Seller'],
-        'BookID': exchangeBook['Textbook ID']
+        'Textbook ID': exchangeBook['Textbook ID']
       },
       'remainder': priceDifference,
       'status': "offer",

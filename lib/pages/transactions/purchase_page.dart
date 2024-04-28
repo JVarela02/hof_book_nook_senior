@@ -336,8 +336,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: AlertDialog(
-                                        title: Text("No Money :("),
-                                        content: Text("Broke Ass"),
+                                        title: Text("Insufficient Funds"),
+                                        content: Text("I'm sorry you do not have enough credits to complete this transaction"),
                                         actions: [
                                           TextButton(
                                             //textColor: Colors.black,

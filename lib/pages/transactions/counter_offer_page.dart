@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
@@ -55,24 +56,6 @@ class CounterOfferPageState extends State<CounterOfferPage> {
       'status': "purchase",
     });
 
-    // Updates transaction step to 3
-    transaction_document.update({'step': 3});
-
-    print("transactions updated");
-
-    // updates notification to "read" if applicable 
-    if(notificationReference != 0 ){
-    final notification_document = FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(notificationReference);
-    notification_document.update({
-      'read': true,
-    });
-    print("notification updated");
-    }
-    else{
-      print("ha nope no notification");
-    }
 
     // creates a new notification for seller
     sendNotification(
@@ -100,16 +83,35 @@ class CounterOfferPageState extends State<CounterOfferPage> {
         receiver_email: transactionData['seller_email']);
     print("email sent");
 
-    // send back to notification page
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return NotificationPage();
-    }));
 
-    print("ahh");
-    ;
+    // updates notification to "read" if applicable and send back to applicable page
+    if(notificationReference != "0" ){
+      final notification_document = FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationReference);
+      notification_document.update({
+        'read': true,
+      });
+      print("notification updated");
+      // send back to notification page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return NotificationPage();
+      }));
+    }
+    else{
+      print("ha nope no notification");
+      // send back to notification page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
+    }
+
+    
+
   }
 
   counterRejected() async {

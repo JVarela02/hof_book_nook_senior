@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
@@ -1111,19 +1112,6 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
 
     print("transactions updated");
 
-    // update notification to "read"
-    if (notificationReference != 0) {
-      final notification_document = FirebaseFirestore.instance
-          .collection('notifications')
-          .doc(notificationReference);
-      notification_document.update({
-        'read': true,
-      });
-      print("notification updated");
-    } else {
-      print("ha nope no notification");
-    }
-
     // create a new notification for opposite person
     if (user.email == transactionData['seller_email']) {
       sendNotification(
@@ -1176,13 +1164,34 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
       print("email sent");
     }
 
-    // send back to navigation page
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return NotificationPage();
-    }));
+    // update notification to "read" and pop back to right page
+    if (notificationReference != "0") {
+      final notification_document = FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationReference);
+      notification_document.update({
+        'read': true,
+      });
+      // send back to navigation page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return NotificationPage();
+      }));
+      print("notification updated");
+    } else {
+      print("ha nope no notification");
+      // send back to transaction page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return ActTransPage();
+      }));
+    }
+
+    
   }
 
   @override

@@ -152,7 +152,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
         'Price': forSaleBook['Price'],
         'Title': forSaleBook['Title'],
         'Seller': forSaleBook['Seller'],
-        'BookID': forSaleBook['Textbook ID']
+        'Textbook ID': forSaleBook['Textbook ID']
       },
       'status': "purchase",
       'transaction_ID': code,

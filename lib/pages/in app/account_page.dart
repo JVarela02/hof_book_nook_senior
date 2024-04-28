@@ -283,7 +283,7 @@ class _accountPageState extends State<accountPage> {
                 },
                 child: Text(
                   "Wishlist",
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),

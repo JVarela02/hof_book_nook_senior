@@ -60,7 +60,7 @@ checkType(var transaction){
       var rightNow = DateFormat(' MMM d, yyyy H:mm a').parse(rightnowString);
       String meetTimeString = transaction['meetup'][1] + " " + transaction['meetup'][2];
       var meetTime = DateFormat(' MMM d, yyyy H:mm a').parse(meetTimeString);
-      var open = rightNow.compareTo(meetTime);
+      open = rightNow.compareTo(meetTime);
       if(open >= 0){
         print("open");
       }
@@ -68,7 +68,7 @@ checkType(var transaction){
         print("closed");
       }}
     else{
-      int open = -3;
+      open = -3;
     }
 
     // Offer Page Route

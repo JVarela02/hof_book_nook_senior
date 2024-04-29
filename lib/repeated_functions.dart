@@ -137,3 +137,23 @@ Future idGenerator(int lengthRandom) async {
     return code;
   }
 }
+
+Future findTextbook(String txtID, String Seller) async {
+    print("getting Textbook");
+    String saleTextbookReference = "";
+    await FirebaseFirestore.instance
+        .collection('textbooks')
+        .where('Textbook ID', isEqualTo: txtID)
+        .where('Seller', isEqualTo: Seller)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              print(document.reference.id);
+              saleTextbookReference = document.reference.id;
+            },
+          ),
+        );
+        print(saleTextbookReference);
+        return saleTextbookReference;
+  }

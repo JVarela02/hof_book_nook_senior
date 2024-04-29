@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/final_picture_confirmation_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 
@@ -35,6 +37,63 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
 
 
   final user = FirebaseAuth.instance.currentUser!;
+   var firstCamera;
+  late CameraController controller;
+  late Future<void> initControllerFuture;
+
+  Future getCameras() async {
+      final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      CameraPreview(controller);
+      /*await Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DisplayFeedScreen(
+        controllers: controller
+      )))); */
+      showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Expanded(
+                  child: AlertDialog(
+                    title: Text("Take Photo"),
+                    content: Column(
+                      children: [
+                        Text("Please take a photo of the book you are delivering with the receiver's ID"),
+                        CameraPreview(controller),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        //textColor: Colors.black,
+                        onPressed: () async {
+                          await takePicture();
+                          //Navigator.of(context).pop();
+                        },
+                        child: Text('Take Picture'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+      //final image = await controller.takePicture();
+      //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+      //        imagePath: image.path,)));
+      //print(firstCamera);
+  }
+
+  Future takePicture() async {
+    final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      final image = await controller.takePicture();
+      //await 
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => finalImageConfirmPage(transactionData,transactionReference,notificationReference,version,image.path,)));
+      print("WE MADE IT BOYS");
+  }
 
   getUserInfo (var email) async{
     var userID;
@@ -113,6 +172,12 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
         transaction_document.update({
           'status': "Complete",
         });
+
+      // Delete the forSale and forExchange textbook from DB 
+    String forSaleReference = await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['seller_email']);
+    print("reference is $forSaleReference");
+    FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference).delete();
+    print("deleted");
       
       // Mark Notification as read (if applicapble) and pop back to correct page
       print(notificationReference);
@@ -140,7 +205,7 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
     }
   }
 
-  exhangeDelivered() async {
+  /* exhangeDelivered() async {
       // Change status to "Exchange Delivered"
       final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
@@ -199,7 +264,7 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
       //Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
     }
-  }
+  } */
 
 
   @override
@@ -308,7 +373,7 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
               padding: const EdgeInsets.only(left: 1.0),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text("Setup Delivery Date Order #" +
+                  child: Text("Confirm Receipt Order #" +
                       transactionData['transaction_ID'].toString())),
             ),
           ),
@@ -433,15 +498,10 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
 
                   ElevatedButton(
                     onPressed: () async {
-                      final notification_document = FirebaseFirestore.instance
-                        .collection('notifications')
-                        .doc(notificationReference);
-                        notification_document.update({
-                        'read': true,
-                        });
+                      await getCameras();
                     },
                     child: Text(
-                      "Confirm Receipt",
+                      "Confirm Delivery and Receipt",
                       //style: TextStyle(color: Colors.white),
                       style: GoogleFonts.merriweather(
                           fontSize: 15, color: Colors.white),

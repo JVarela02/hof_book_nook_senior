@@ -139,14 +139,6 @@ class _SupportPageState extends State<SupportPage> {
           transaction: _transactionIDController.text.toString(),
           user_email: user.email.toString(),
           message: _situationController.text.toString());
-
-      sendNotification(
-        123456,
-        "Testing Notifications",
-        "haha kill me please",
-        "mcyriac1@pride.hofstra.edu",
-        "mcyriac1@pride.hofstra.edu",
-      );
     }
   }
 

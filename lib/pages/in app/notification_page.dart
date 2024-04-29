@@ -13,9 +13,9 @@ import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
-import 'package:cloud_functions/cloud_functions.dart';
+//import 'package:cloud_functions/cloud_functions.dart';
 
-FirebaseFunctions functions = FirebaseFunctions.instance;
+//FirebaseFunctions functions = FirebaseFunctions.instance;
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -191,20 +191,20 @@ class _NotificationPageState extends State<NotificationPage> {
         );
   }
 
-  Future<void> getStuff() async {
-    print("IM IN GET STUFF");
-    final result =
-        await FirebaseFunctions.instance.httpsCallable('testsendemail').call(
-      {
-        "text": 'text',
-        "push": true,
-      },
-    );
-    print("JUST CALLED STUFF");
-    var response = result.data as String;
-    print("IN GET STUFF RIGHT NOW FR FR");
-    print(response);
-  }
+  //Future<void> getStuff() async {
+  //  print("IM IN GET STUFF");
+  //  final result =
+  //      await FirebaseFunctions.instance.httpsCallable('testsendemail').call(
+  //    {
+  //      "text": 'text',
+  //      "push": true,
+  //    },
+  //  );
+  //  print("JUST CALLED STUFF");
+  //  var response = result.data as String;
+  //  print("IN GET STUFF RIGHT NOW FR FR");
+  //  print(response);
+  //}
 
   void showDialogBox(String index) async {
     showDialog(
@@ -358,7 +358,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
-                      getStuff();
+                      //getStuff();
                       Navigator.of(context).pop();
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {

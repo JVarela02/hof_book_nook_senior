@@ -635,8 +635,8 @@ class _CreditPageState extends State<CreditPage> {
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: AlertDialog(
-                                        title: Text("Chungus"),
-                                        content: Text("Current Credits: " + creditIDList[1].toString() + "\n\nCurrent Credits in \nTransactions: "),
+                                        title: Text(""),
+                                        content: Text("Current Credits: " + creditIDList[1].toString()),
                                         actions: [
                                           TextButton(
                                             //textColor: Colors.black,
@@ -653,14 +653,14 @@ class _CreditPageState extends State<CreditPage> {
                     print('Chungus');
                   },
                   child: const Text("View Credits"),),
-                  ElevatedButton(
+                  /*ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(200,40)
                   ),
                   onPressed: () async {
                             await getCameras();
                   },
-                  child: const Text("BEATING FLUTTER TO DEATH WITH HAMMERS"),),
+                  child: const Text("BEATING FLUTTER TO DEATH WITH HAMMERS"),), */
               ]
             )
           )

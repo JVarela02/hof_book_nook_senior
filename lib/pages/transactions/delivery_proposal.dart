@@ -1071,6 +1071,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
 
   DateTime selectedDate = DateTime.now();
   String selectedDateText = "Select Date";
+  var dateInEpoch;
 
   selectDate() {
     showDatePicker(
@@ -1081,6 +1082,8 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
         .then((value) {
       setState(() {
         selectedDate = value!;
+        int turnToEpoch = selectedDate.millisecondsSinceEpoch;
+        dateInEpoch = turnToEpoch;
         selectedDateText = DateFormat('EEEE: MMM d, yyyy').format(selectedDate);
         getTimes(locationValue, selectedDateText);
       });
@@ -1107,7 +1110,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
 
     transaction_document.update({
-      'meetup': [location, meet, time],
+      'meetup': [location, meet, time, dateInEpoch],
     });
 
     print("transactions updated");

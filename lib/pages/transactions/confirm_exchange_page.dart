@@ -47,7 +47,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName,
       this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
-
   // Future confirmUniqueCode(int code) async {
   //   List<dynamic> references = [];
   //   await FirebaseFirestore.instance
@@ -68,7 +67,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   //     return true;
   //   }
   // }
-
 
   // Future codeGenerator() async {
   //   int code = Random().nextInt(899999) + 100000;
@@ -218,6 +216,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   } */
 
   Future createTransaction() async {
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     int code = await idGenerator(6);
     await FirebaseFirestore.instance.collection("transactions").add({
       'seller': sellerName,
@@ -249,7 +248,8 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       'remainder': priceDifference,
       'status': "offer",
       'transaction_ID': code,
-      'meetup': []
+      'meetup': [],
+      'timestamp': timestamp
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale

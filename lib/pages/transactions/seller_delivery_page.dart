@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/final_picture_confirmation_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 
@@ -35,6 +37,64 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
 
 
   final user = FirebaseAuth.instance.currentUser!;
+
+  var firstCamera;
+  late CameraController controller;
+  late Future<void> initControllerFuture;
+
+  Future getCameras() async {
+      final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      CameraPreview(controller);
+      /*await Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DisplayFeedScreen(
+        controllers: controller
+      )))); */
+      showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Expanded(
+                  child: AlertDialog(
+                    title: Text("Take Photo"),
+                    content: Column(
+                      children: [
+                        Text("Please take a photo of the book you are delivering with the receiver's ID"),
+                        CameraPreview(controller),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        //textColor: Colors.black,
+                        onPressed: () async {
+                          await takePicture();
+                          //Navigator.of(context).pop();
+                        },
+                        child: Text('Take Picture'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+      //final image = await controller.takePicture();
+      //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+      //        imagePath: image.path,)));
+      //print(firstCamera);
+  }
+
+  Future takePicture() async {
+    final cameras = await availableCameras();
+      final firstCamera = cameras[0];
+      controller = CameraController(firstCamera, ResolutionPreset.medium,);
+      initControllerFuture = controller.initialize();
+      await initControllerFuture;
+      final image = await controller.takePicture();
+      //await 
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => finalImageConfirmPage(transactionData,transactionReference,notificationReference,version,image.path,)));
+      print("WE MADE IT BOYS");
+  }
 
   getUserInfo (var email) async{
     var userID;
@@ -94,7 +154,8 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
 
   purchaseDelivered() async {
     if(transactionData['status'] == "Await"){
-      // Change status to "Purchase Delivered"
+      await getCameras();}
+      /*// Change status to "Purchase Delivered"
       final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
         .doc(transactionReference);
@@ -152,7 +213,7 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
       //Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
     }
-    }
+    }*/
     else{
       // pop up error that says item has already been marked as delivered 
       showErrorBox(1);
@@ -224,6 +285,12 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
         transaction_document.update({
           'status': "Complete",
         });
+
+    // Delete the forSale and forExchange textbook from DB 
+    String forSaleReference = await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['seller_email']);
+    String forExchangeReference = await findTextbook(transactionData['forExchange']['Textbook ID'], transactionData['buyer_email']);
+    FirebaseFirestore.instance.collection('textbooks').doc(forSaleReference).delete;
+    FirebaseFirestore.instance.collection('textbooks').doc(forExchangeReference).delete;
       
       // Mark Notification as read (if applicapble) and pop back to correct page
       print(notificationReference);

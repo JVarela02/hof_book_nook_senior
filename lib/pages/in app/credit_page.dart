@@ -1,6 +1,6 @@
 //import 'dart:js_util';
 
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,54 +38,54 @@ class _CreditPageState extends State<CreditPage> {
   late CameraController controller;
   late Future<void> initControllerFuture;
 
-  Future getCameras() async {
-      final cameras = await availableCameras();
-      final firstCamera = cameras[0];
-      controller = CameraController(firstCamera, ResolutionPreset.medium,);
-      initControllerFuture = controller.initialize();
-      await initControllerFuture;
-      CameraPreview(controller);
-      /*await Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DisplayFeedScreen(
-        controllers: controller
-      )))); */
-      showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Expanded(
-                  child: AlertDialog(
-                    title: Text("Chungus"),
-                    content: CameraPreview(controller),
-                    actions: [
-                      TextButton(
-                        //textColor: Colors.black,
-                        onPressed: () async {
-                          await takePicture();
-                          //Navigator.of(context).pop();
-                        },
-                        child: Text('Take Picture'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-      //final image = await controller.takePicture();
-      //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
-      //        imagePath: image.path,)));
-      //print(firstCamera);
-  }
+  // Future getCameras() async {
+  //     final cameras = await availableCameras();
+  //     final firstCamera = cameras[0];
+  //     controller = CameraController(firstCamera, ResolutionPreset.medium,);
+  //     initControllerFuture = controller.initialize();
+  //     await initControllerFuture;
+  //     CameraPreview(controller);
+  //     /*await Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DisplayFeedScreen(
+  //       controllers: controller
+  //     )))); */
+  //     showDialog(
+  //             context: context,
+  //             builder: (BuildContext context) {
+  //               return Expanded(
+  //                 child: AlertDialog(
+  //                   title: Text("Chungus"),
+  //                   content: CameraPreview(controller),
+  //                   actions: [
+  //                     TextButton(
+  //                       //textColor: Colors.black,
+  //                       onPressed: () async {
+  //                         await takePicture();
+  //                         //Navigator.of(context).pop();
+  //                       },
+  //                       child: Text('Take Picture'),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               );
+  //             },
+  //           );
+  //     //final image = await controller.takePicture();
+  //     //await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+  //     //        imagePath: image.path,)));
+  //     //print(firstCamera);
+  // }
 
-  Future takePicture() async {
-    final cameras = await availableCameras();
-      final firstCamera = cameras[0];
-      controller = CameraController(firstCamera, ResolutionPreset.medium,);
-      initControllerFuture = controller.initialize();
-      await initControllerFuture;
-      final image = await controller.takePicture();
-      await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
-              imagePath: image.path,)));
-      print("WE MADE IT BOYS");
-  }
+  // Future takePicture() async {
+  //   final cameras = await availableCameras();
+  //     final firstCamera = cameras[0];
+  //     controller = CameraController(firstCamera, ResolutionPreset.medium,);
+  //     initControllerFuture = controller.initialize();
+  //     await initControllerFuture;
+  //     final image = await controller.takePicture();
+  //     await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(
+  //             imagePath: image.path,)));
+  //     print("WE MADE IT BOYS");
+  // }
 
   //get reference ID for credits
   Future getCreditID() async {
@@ -653,14 +653,6 @@ class _CreditPageState extends State<CreditPage> {
                     print('Chungus');
                   },
                   child: const Text("View Credits"),),
-                  ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size(200,40)
-                  ),
-                  onPressed: () async {
-                            await getCameras();
-                  },
-                  child: const Text("BEATING FLUTTER TO DEATH WITH HAMMERS"),),
               ]
             )
           )
@@ -668,21 +660,21 @@ class _CreditPageState extends State<CreditPage> {
   }
 }
 
-class DisplayPictureScreen extends StatelessWidget {
-  final String imagePath;
+// class DisplayPictureScreen extends StatelessWidget {
+//   final String imagePath;
 
-  const DisplayPictureScreen({super.key, required this.imagePath});
+//   const DisplayPictureScreen({super.key, required this.imagePath});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
-      // The image is stored as a file on the device. Use the Image.file
-      // constructor with the given path to display the image.
-      body: Image.file(File(imagePath)),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Display the Picture')),
+//       // The image is stored as a file on the device. Use the Image.file
+//       // constructor with the given path to display the image.
+//       body: Image.file(File(imagePath)),
+//     );
+//   }
+// }
 
 /*class DisplayFeedScreen extends StatelessWidget {
   final CameraController controllers;

@@ -68,7 +68,7 @@ class _NotificationPageState extends State<NotificationPage> {
       var rightNow = DateFormat(' MMM d, yyyy H:mm a').parse(rightnowString);
       String meetTimeString = transaction['meetup'][1] + " " + transaction['meetup'][2];
       var meetTime = DateFormat(' MMM d, yyyy H:mm a').parse(meetTimeString);
-      var open = rightNow.compareTo(meetTime);
+      open = rightNow.compareTo(meetTime);
       if(open >= 0){
         print("open");
       }
@@ -76,7 +76,7 @@ class _NotificationPageState extends State<NotificationPage> {
         print("closed");
       }}
     else{
-      int open = -3;
+      open = -3;
     }
 
     // Offer Page Route
@@ -210,6 +210,7 @@ class _NotificationPageState extends State<NotificationPage> {
 
     else if(getStatus == "Await"){
       print(type);
+      print(open);
       if(open >= 0){
         if(transaction['seller_email'] == user.email){
           Navigator.push(

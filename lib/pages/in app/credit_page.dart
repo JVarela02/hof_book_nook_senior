@@ -635,8 +635,8 @@ class _CreditPageState extends State<CreditPage> {
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: AlertDialog(
-                                        title: Text("Chungus"),
-                                        content: Text("Current Credits: " + creditIDList[1].toString() + "\n\nCurrent Credits in \nTransactions: "),
+                                        title: Text(""),
+                                        content: Text("Current Credits: " + creditIDList[1].toString()),
                                         actions: [
                                           TextButton(
                                             //textColor: Colors.black,

@@ -29,7 +29,8 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   final String notificationReference;
   OfferReceivedPageState(this.transactionData, this.transactionReference,
       this.notificationReference);
-
+  
+  int remainder= 0;
   String remainderText = "";
   checkRemainder() {
     int remainder = int.parse(transactionData['remainder']);
@@ -43,6 +44,62 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       remainderText =
           "Buyer would also pay " + remainder.toString() + " credits";
     }
+  }
+
+  List<dynamic> creditIDList = [];
+
+  Future getCreditID() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              creditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      //print(credits);
+      //print(creditIDList[0]);
+      //print(credits.runtimeType);
+      creditIDList.add(credits);
+      //print(creditIDList);
+       
+  }
+
+  }
+
+  List<dynamic> sellerCreditIDList = [];
+
+  Future getCreditIDSeller() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: transactionData['seller_email'])
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              sellerCreditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      sellerCreditIDList.add(credits);
+       
+  }
+
   }
 
   var saleTextbookReference = "";
@@ -333,8 +390,19 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     print("rawr");
+                    await checkRemainder();
+                    await getCreditID().then((data) {
+                                print(creditIDList);
+                                final documents = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(creditIDList[0]);
+                                  documents.update({
+                                    'credits': creditIDList[1] + int.parse(transactionData['Price'] - remainder),                                   
+                              });
+                              print("I should have subtracted by now.");
+                              });
                     offerAccepted();
                   }, // route to account page
                   child: Text(
@@ -344,8 +412,18 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 ),
                 SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     print("boo");
+                    await getCreditID().then((data) {
+                                print(creditIDList);
+                                final documents = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(creditIDList[0]);
+                                  documents.update({
+                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                              });
+                              print("I should have subtracted by now.");
+                              });
                     offerRejected();
                   }, // route to account page
                   child: Text(

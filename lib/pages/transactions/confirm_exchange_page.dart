@@ -47,7 +47,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   ConfirmExchangePageState(this.forSaleBook, this.exchangeBook, this.sellerName,
       this.buyerName, this.priceDifference, this.sellerEmail, this.buyerEmail);
 
-
   // Future confirmUniqueCode(int code) async {
   //   List<dynamic> references = [];
   //   await FirebaseFirestore.instance
@@ -69,7 +68,6 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   //   }
   // }
 
-
   // Future codeGenerator() async {
   //   int code = Random().nextInt(899999) + 100000;
   //   bool unique = await confirmUniqueCode(code);
@@ -80,6 +78,62 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   //   }
   //   // print(code);
   // }
+
+  List<dynamic> creditIDList = [];
+
+  Future getCreditID() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              creditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      //print(credits);
+      //print(creditIDList[0]);
+      //print(credits.runtimeType);
+      creditIDList.add(credits);
+      //print(creditIDList);
+       
+  }
+
+  }
+
+  List<dynamic> sellerCreditIDList = [];
+
+  Future getCreditIDSeller() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: sellerEmail)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              sellerCreditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      sellerCreditIDList.add(credits);
+       
+  }
+
+  }
 
   var forSaleReference = "";
   var forExchangeReference = "";
@@ -162,6 +216,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   } */
 
   Future createTransaction() async {
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     int code = await idGenerator(6);
     await FirebaseFirestore.instance.collection("transactions").add({
       'seller': sellerName,
@@ -177,7 +232,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': forSaleBook['Price'],
         'Title': forSaleBook['Title'],
         'Seller': forSaleBook['Seller'],
-        'BookID': forSaleBook['Textbook ID']
+        'Textbook ID': forSaleBook['Textbook ID']
       },
       'forExchange': {
         'Author': exchangeBook['Author'],
@@ -188,12 +243,13 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
         'Price': exchangeBook['Price'],
         'Title': exchangeBook['Title'],
         'Seller': exchangeBook['Seller'],
-        'BookID': exchangeBook['Textbook ID']
+        'Textbook ID': exchangeBook['Textbook ID']
       },
       'remainder': priceDifference,
       'status': "offer",
       'transaction_ID': code,
-      'meetup': []
+      'meetup': [],
+      'timestamp': timestamp
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale
@@ -351,8 +407,31 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                   height: 15,
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    createTransaction();
+                  onPressed: () async {
+                    if(int.parse(forSaleBook['Price']) > 0) {
+                      await getCreditID().then((data) {
+                                  print(creditIDList);
+                                  final documents = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(creditIDList[0]);
+                                    documents.update({
+                                      'credits': creditIDList[1] - int.parse(forSaleBook['Price']),
+                                });
+                                });
+                      createTransaction();
+                    } else if (int.parse(forSaleBook['Price']) < 0) {
+                      await getCreditID().then((data) {
+                                  print(creditIDList);
+                                  final documents = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(creditIDList[0]);
+                                    documents.update({
+                                      'credits': sellerCreditIDList[1] - int.parse(forSaleBook['Price']),
+                                });
+                                });
+                      createTransaction();
+                    }
+                    
                     //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                     // This is where the purchase will be truly confirmed. Send email to other user notifying
                   }, // route to account page

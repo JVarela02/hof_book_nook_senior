@@ -323,11 +323,14 @@ class _PurchasePageState extends State<PurchasePage> {
                           height: 15,
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             getCreditID();
                             //print(creditIDList[1].runtimeType);
                             //print(itemID['Price'].runtimeType);
                             int price = int.parse(itemID['Price']);
+                            //print(creditIDList[1]);
+                            //print(creditIDList[0]);
+                            //print(price);
                             if(creditIDList[1] >= price) {
                               confirmPurchasePageRoute();
                             } else {
@@ -336,8 +339,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: AlertDialog(
-                                        title: Text("No Money :("),
-                                        content: Text("Broke Ass"),
+                                        title: Text("Insufficient Funds"),
+                                        content: Text("I'm sorry you do not have enough credits to complete this transaction"),
                                         actions: [
                                           TextButton(
                                             //textColor: Colors.black,
@@ -394,21 +397,24 @@ class _PurchasePageState extends State<PurchasePage> {
                           height: 15,
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            getCreditID();
+                          onPressed: () async {
+                            await getCreditID();
+                            int price = int.parse(itemID['Price']);
+                            calculateDifference(price);
                             //print(creditIDList[1].runtimeType);
                             //print(itemID['Price'].runtimeType);
-                            int price = int.parse(difference);
-                            if(credits >= price) {
-                              confirmPurchasePageRoute();
+                            print(difference);
+                            print(creditIDList[0]);
+                            if(creditIDList[1] >= int.parse(difference)) {
+                              confirmExchangePageRoute();
                             } else {
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return Expanded(
                                       child: AlertDialog(
-                                        title: Text("No Money :("),
-                                        content: Text("Broke Ass"),
+                                        title: Text("Insufficient Credits"),
+                                        content: Text("Please purhcase more credits on the credits page."),
                                         actions: [
                                           TextButton(
                                             //textColor: Colors.black,

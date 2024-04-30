@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
@@ -27,6 +28,63 @@ class CounterOfferPageState extends State<CounterOfferPage> {
   final String notificationReference;
   CounterOfferPageState(this.transactionData, this.transactionReference,
       this.notificationReference);
+
+  List<dynamic> creditIDList = [];
+
+  Future getCreditID() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user.email)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              creditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      //print(credits);
+      //print(creditIDList[0]);
+      //print(credits.runtimeType);
+      creditIDList.add(credits);
+      //print(creditIDList);
+       
+  }
+
+  }
+
+  List<dynamic> sellerCreditIDList = [];
+
+  Future getCreditIDSeller() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: transactionData['seller_email'])
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              sellerCreditIDList.add(document.reference.id);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      var credits = data?['credits'];
+      sellerCreditIDList.add(credits);
+       
+  }
+
+  }
+
 
   var saleTextbookReference = "";
   Future findTextbook(String txtID, String Seller) async {
@@ -55,24 +113,6 @@ class CounterOfferPageState extends State<CounterOfferPage> {
       'status': "purchase",
     });
 
-    // Updates transaction step to 3
-    transaction_document.update({'step': 3});
-
-    print("transactions updated");
-
-    // updates notification to "read" if applicable 
-    if(notificationReference != 0 ){
-    final notification_document = FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(notificationReference);
-    notification_document.update({
-      'read': true,
-    });
-    print("notification updated");
-    }
-    else{
-      print("ha nope no notification");
-    }
 
     // creates a new notification for seller
     sendNotification(
@@ -100,16 +140,35 @@ class CounterOfferPageState extends State<CounterOfferPage> {
         receiver_email: transactionData['seller_email']);
     print("email sent");
 
-    // send back to notification page
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return NotificationPage();
-    }));
 
-    print("ahh");
-    ;
+    // updates notification to "read" if applicable and send back to applicable page
+    if(notificationReference != "0" ){
+      final notification_document = FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationReference);
+      notification_document.update({
+        'read': true,
+      });
+      print("notification updated");
+      // send back to notification page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+        return NotificationPage();
+      }));
+    }
+    else{
+      print("ha nope no notification");
+      // send back to notification page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
+    }
+
+    
+
   }
 
   counterRejected() async {
@@ -285,8 +344,18 @@ class CounterOfferPageState extends State<CounterOfferPage> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     print("rawr");
+                    await getCreditID().then((data) {
+                                print(creditIDList);
+                                final documents = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(creditIDList[0]);
+                                  documents.update({
+                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                              });
+                              print("I should have subtracted by now.");
+                              });
                     counterAccepted();
                   }, // route to account page
                   child: Text(
@@ -296,7 +365,17 @@ class CounterOfferPageState extends State<CounterOfferPage> {
                 ),
                 SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await getCreditID().then((data) {
+                                print(creditIDList);
+                                final documents = FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(creditIDList[0]);
+                                  documents.update({
+                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                              });
+                              print("I should have subtracted by now.");
+                              });
                     print("boo");
                     counterRejected();
                   }, // route to account page

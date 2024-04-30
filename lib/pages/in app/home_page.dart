@@ -398,17 +398,16 @@ class _ResultsPageState extends State<ResultsPage> {
     );
   }
 
-Future removeLoggedBooks() async{
+  Future removeLoggedBooks() async {
     var referenceList = await getTextbookResults();
     int length = referenceList.length;
-    for(var i = 0; i < length; i++){
+    for (var i = 0; i < length; i++) {
       print(referenceList[i].toString() + "at i = " + i.toString());
       var seller = await GetSeller(referenceList[i]);
-      if(seller.toString() == user.email.toString()){
+      if (seller.toString() == user.email.toString()) {
         referenceList.remove(referenceList[i].toString());
         i--;
-      }
-      else{
+      } else {
         print("next line");
       }
     }
@@ -439,7 +438,9 @@ Future removeLoggedBooks() async{
     if (widget.dropdownValue == "Author") {
       await FirebaseFirestore.instance
           .collection('textbooks')
-          .where('Author Parts', arrayContains: widget.searchCriteria.toString().trim().toLowerCase())
+          .where('Author Parts',
+              arrayContains:
+                  widget.searchCriteria.toString().trim().toLowerCase())
           //.where('Seller', isNotEqualTo: user.email)
           .where('InNegotiations', isEqualTo: false)
           .get()
@@ -458,7 +459,9 @@ Future removeLoggedBooks() async{
           .collection('textbooks')
           .where('InNegotiations', isEqualTo: false)
           // .where('Seller', isNotEqualTo: user.email)
-          .where('Title Parts', arrayContains: widget.searchCriteria.toString().trim().toLowerCase())
+          .where('Title Parts',
+              arrayContains:
+                  widget.searchCriteria.toString().trim().toLowerCase())
           .get()
           .then(
             (snapshot) => snapshot.docs.forEach(

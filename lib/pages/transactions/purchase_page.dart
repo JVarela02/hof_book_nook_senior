@@ -286,11 +286,14 @@ class _PurchasePageState extends State<PurchasePage> {
                                 children: [
                                   Align(
                                     alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      itemID['Title'],
-                                      style: GoogleFonts.merriweather(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints.tightFor(width: 400),
+                                      child: Text(
+                                        itemID['Title'],
+                                        style: GoogleFonts.merriweather(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),

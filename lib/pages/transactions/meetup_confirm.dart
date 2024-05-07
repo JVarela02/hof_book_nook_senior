@@ -10,9 +10,8 @@ import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
-
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 const theTask = "notifTask";
@@ -211,12 +210,15 @@ class MeetupConfirmPageState extends State<MeetupConfirmPage> {
                       SizedBox(
                         width: 10,
                       ),
-                      Text(
-                        transactionData['forSale']['Title'] +
-                            " by " +
-                            transactionData['forSale']['Author'],
-                        style: GoogleFonts.merriweather(
-                          fontSize: 15,
+                      ConstrainedBox(
+                        constraints: BoxConstraints.tightFor(width: 275),
+                        child: Text(
+                          transactionData['forSale']['Title'] +
+                              " by " +
+                              transactionData['forSale']['Author'],
+                          style: GoogleFonts.merriweather(
+                            fontSize: 15,
+                          ),
                         ),
                       )
                     ],

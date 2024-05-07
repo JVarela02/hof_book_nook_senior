@@ -143,7 +143,7 @@ class BuyerReceiptPageState extends State<BuyerReceiptPage> {
       sendNotification(
         transactionData['transaction_ID'],
         transactionData['buyer'] +
-            " has marked " + transactionData['forSale']['Title'] + "as received",
+            " has marked " + transactionData['forSale']['Title'] + " as received",
         transactionData['buyer'] +
             " has marked " +
             transactionData['forSale']['Title'] +

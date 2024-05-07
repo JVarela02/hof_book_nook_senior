@@ -1069,14 +1069,14 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
   }
 
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now().add(Duration(days: 1));
   String selectedDateText = "Select Date";
   var dateInEpoch;
 
   selectDate() {
     showDatePicker(
             context: context,
-            initialDate: DateTime.now(),
+            initialDate: DateTime.now().add(Duration(days: 1)),
             firstDate: DateTime.now(),
             lastDate: DateTime.now().add(Duration(days: 7)))
         .then((value) {

@@ -49,6 +49,34 @@ checkType(var transaction){
     );
   }
 
+  void showComplete() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Completed Transaction'),
+              content: Text('This transaction has been completed by both parties. If you have any issues with the transaction please send a ticket through the Get Help page. Thank You'),
+            ),
+          );
+      }
+    );
+  }
+
+  void showCanceled() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Canceled Transaction'),
+              content: Text('This transaction has been canceled by both parties and is no longer available. If you believe you are getting this in error please send a ticket through the Get Help page. Thank You'),
+            ),
+          );
+      }
+    );
+  }
+
   whereTo(var transaction, transaction_reference, notification_reference) {
     print('in whereTo');
     var getStatus = transaction['status'];
@@ -278,15 +306,16 @@ checkType(var transaction){
       }
     }
 
+    else if (getStatus == "Complete"){
+     showComplete();
+    }
+
+    else if(getStatus == "canceld"){
+      showCanceled();
+    }
+
     else{
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return NotifCompletePage();
-            },
-          ),
-        );
+      print("there shouldn't be anuthing else");
     }
 
   }
@@ -295,6 +324,7 @@ checkType(var transaction){
     List<dynamic> sellerList = [];
     List<dynamic> buyerList = [];
     List<String> transList = [];
+    List<String> actualTransRefs = [];
     List<dynamic> userTrans = [];
     List<dynamic> transIDList = [];
     List<dynamic> status = [];
@@ -341,6 +371,7 @@ checkType(var transaction){
           transIDList.add(data?['transaction_ID']);
           status.add(data?['status']);
           titleList.add(data?['forSale']['Title']);
+          actualTransRefs.add(transList[i]);
           fullTransactionList.add(data);
         }
       }
@@ -365,6 +396,18 @@ checkType(var transaction){
       }
 
       }
+  
+  Widget statusIs(index){
+    if(status[index] == "Complete"){
+      return(Icon(Icons.check_circle_outlined));
+    }
+    else if(status[index] == "canceled"){
+      return(Icon(Icons.cancel_outlined));
+    }
+    else{
+      return(Icon(Icons.menu_book_rounded));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -421,12 +464,14 @@ checkType(var transaction){
                                  
                           subtitle:
                                 Text("Transaction ID: "+ transIDList[index].toString()),
-                          trailing: Icon(
-                            Icons.square_outlined,
-                          ),
+                                //Text("Transaction Reference: "+ actualTransRefs[index].toString()),
+                          trailing: 
+                          //Icon(Icons.square_outlined,),
+                          statusIs(index),
+                          
                           onTap: () {
-                              print("data being passed is " + transList[index]);
-                              whereTo(fullTransactionList[index], transList[index], "0");
+                              print("data being passed is " + actualTransRefs[index]);
+                              whereTo(fullTransactionList[index], actualTransRefs[index], "0");
                               //showDialogBox(transIDList[index]),
                           }
                         );

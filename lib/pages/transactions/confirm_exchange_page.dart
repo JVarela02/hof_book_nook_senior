@@ -325,11 +325,14 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              forSaleBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints.tightFor(width: 400),
+                              child: Text(
+                                forSaleBook['Title'],
+                                style: GoogleFonts.merriweather(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),

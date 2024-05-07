@@ -279,12 +279,14 @@ class SellerDeliveryPageState extends State<SellerDeliveryPage> {
     print("email sent");
 
     // Change status to "Complete"
+      print("transaction reference is: "+transactionReference);
       final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
         .doc(transactionReference);
         transaction_document.update({
           'status': "Complete",
         });
+        print("transaction updated");
 
     // Delete the forSale and forExchange textbook from DB 
     String forSaleReference = await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['seller_email']);

@@ -30,60 +30,61 @@ class CounterOfferPageState extends State<CounterOfferPage> {
       this.notificationReference);
 
   List<dynamic> creditIDList = [];
+  String creditReference = "";
+  int creditAmount = 0;
 
-  Future getCreditID() async {
+  Future getCreditInfo() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .where('email', isEqualTo: user.email)
+        .where('email', isEqualTo: transactionData['buyer_email'])
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
               //print(document.reference.id);
-              creditIDList.add(document.reference.id);
+              //creditIDList.add(document.reference.id);
+              creditReference = document.reference.id;
             },
           ),
         );
     var collection = FirebaseFirestore.instance.collection('users');
-    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    var docSnapshot = await collection.doc(creditReference).get();
     if (docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
-      var credits = data?['credits'];
+      creditAmount = data?['credits'];
       //print(credits);
       //print(creditIDList[0]);
       //print(credits.runtimeType);
-      creditIDList.add(credits);
+      //creditIDList.add(credits);
       //print(creditIDList);
        
   }
 
   }
 
-  List<dynamic> sellerCreditIDList = [];
+  // List<dynamic> sellerCreditIDList = [];
 
-  Future getCreditIDSeller() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: transactionData['seller_email'])
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              //print(document.reference.id);
-              sellerCreditIDList.add(document.reference.id);
-            },
-          ),
-        );
-    var collection = FirebaseFirestore.instance.collection('users');
-    var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
-    if (docSnapshot.exists) {
-      Map<String, dynamic>? data = docSnapshot.data();
-      var credits = data?['credits'];
-      sellerCreditIDList.add(credits);
-       
-  }
-
-  }
+  // Future getCreditIDSeller() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: transactionData['seller_email'])
+  //       .get()
+  //       .then(
+  //         (snapshot) => snapshot.docs.forEach(
+  //           (document) {
+  //             //print(document.reference.id);
+  //             sellerCreditIDList.add(document.reference.id);
+  //           },
+  //         ),
+  //       );
+  //   var collection = FirebaseFirestore.instance.collection('users');
+  //   var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+  //   if (docSnapshot.exists) {
+  //     Map<String, dynamic>? data = docSnapshot.data();
+  //     var credits = data?['credits'];
+  //     sellerCreditIDList.add(credits);    
+  // }
+  // }
 
 
   var saleTextbookReference = "";
@@ -105,6 +106,11 @@ class CounterOfferPageState extends State<CounterOfferPage> {
   }
 
   counterAccepted() async {
+    // remove credits from buyer 
+    await getCreditInfo();
+    final documents = FirebaseFirestore.instance.collection('users').doc(creditReference);
+    documents.update({'credits': (creditAmount - transactionData['forSale']['Price']),});
+
     // Updates transaction status to "meet-up (s)"
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
@@ -346,16 +352,16 @@ class CounterOfferPageState extends State<CounterOfferPage> {
                 ElevatedButton(
                   onPressed: () async {
                     print("rawr");
-                    await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
                     counterAccepted();
                   }, // route to account page
                   child: Text(
@@ -366,16 +372,16 @@ class CounterOfferPageState extends State<CounterOfferPage> {
                 SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
-                    await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
                     print("boo");
                     counterRejected();
                   }, // route to account page

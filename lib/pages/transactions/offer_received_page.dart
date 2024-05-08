@@ -29,16 +29,15 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   final String notificationReference;
   OfferReceivedPageState(this.transactionData, this.transactionReference,
       this.notificationReference);
-  
-  int remainder= 0;
+
+  int remainder = 0;
   String remainderText = "";
   checkRemainder() {
     int remainder = int.parse(transactionData['remainder']);
     if (remainder < 0) {
       remainderText =
           "You would pay buyer " + (-remainder).toString() + " credits";
-    }
-    if (remainder == 0) {
+    } else if (remainder == 0) {
       remainderText = "No credits would be owed";
     } else {
       remainderText =
@@ -71,9 +70,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       //print(credits.runtimeType);
       creditIDList.add(credits);
       //print(creditIDList);
-       
-  }
-
+    }
   }
 
   List<dynamic> sellerCreditIDList = [];
@@ -97,9 +94,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       Map<String, dynamic>? data = docSnapshot.data();
       var credits = data?['credits'];
       sellerCreditIDList.add(credits);
-       
-  }
-
+    }
   }
 
   var saleTextbookReference = "";
@@ -121,7 +116,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   }
 
   offerAccepted() {
-    // Updates status to exchange 
+    // Updates status to exchange
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
         .doc(transactionReference);
@@ -129,17 +124,17 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'status': "exchange",
     });
 
-    // pop this page and transfer to set-up meet-up page 
+    // pop this page and transfer to set-up meet-up page
     Navigator.of(context).pop();
     Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DeliveryProposalPage(
-                  transactionData, transactionReference, notificationReference);
-            },
-          ),
-        );
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return DeliveryProposalPage(
+              transactionData, transactionReference, notificationReference);
+        },
+      ),
+    );
 
     print("ahh");
     ;
@@ -148,24 +143,35 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   offerRejected() async {
     print("in offer rejected");
     // update transaction status to "counter-offer"
-    final transaction_document = FirebaseFirestore.instance.collection('transactions').doc(transactionReference);
-    transaction_document.update({'status': "counter",});
+    final transaction_document = FirebaseFirestore.instance
+        .collection('transactions')
+        .doc(transactionReference);
+    transaction_document.update({
+      'status': "counter",
+    });
 
     print("updated status");
 
-    // Update for Exchange Textbook inNegotiations status to False 
-    await findTextbook(transactionData['forExchange']['Textbook ID'], transactionData['buyer_email']);
+    // Update for Exchange Textbook inNegotiations status to False
+    await findTextbook(transactionData['forExchange']['Textbook ID'],
+        transactionData['buyer_email']);
     print("found the textbook");
-    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
+    final forExchange_document = FirebaseFirestore.instance
+        .collection('textbooks')
+        .doc(saleTextbookReference);
     print("got document");
-    forExchange_document.update({'InNegotiations': false, });
+    forExchange_document.update({
+      'InNegotiations': false,
+    });
 
     print("changed book status");
 
-    // delete forExchange from the transaction so it no longer presents as an exchange in confirmation page 
-    transaction_document.update(<String, dynamic>{"forExchange": FieldValue.delete(),});
-      //{'forExchange': FieldValue.delete()});
-    
+    // delete forExchange from the transaction so it no longer presents as an exchange in confirmation page
+    transaction_document.update(<String, dynamic>{
+      "forExchange": FieldValue.delete(),
+    });
+    //{'forExchange': FieldValue.delete()});
+
     print("deleted forExchange");
 
     print("transactions updated");
@@ -198,7 +204,7 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
     print("email sent");
 
     // update notification to "read" and send back to correct page
-    if(notificationReference != "0" ){
+    if (notificationReference != "0") {
       final notification_document = FirebaseFirestore.instance
           .collection('notifications')
           .doc(notificationReference);
@@ -210,20 +216,21 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
         return NotificationPage();
       }));
-    }
-    else{
+    } else {
       print("ha nope no notification");
       // send back to transaction page
       Navigator.pop(context);
       Navigator.pop(context);
       // Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return ActTransPage();}));
-      
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return ActTransPage();
+      }));
     }
-    
   }
 
   @override
@@ -394,15 +401,17 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                     print("rawr");
                     await checkRemainder();
                     await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price'] - remainder),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                      print(creditIDList);
+                      final documents = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(creditIDList[0]);
+                      print(transactionData['Price']);
+                      documents.update({
+                        'credits': creditIDList[1] +
+                            int.parse(transactionData['Price'] - remainder),
+                      });
+                      print("I should have subtracted by now.");
+                    });
                     offerAccepted();
                   }, // route to account page
                   child: Text(
@@ -415,15 +424,16 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                   onPressed: () async {
                     print("boo");
                     await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                      print(creditIDList);
+                      final documents = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(creditIDList[0]);
+                      documents.update({
+                        'credits': creditIDList[1] +
+                            int.parse(transactionData['Price']),
+                      });
+                      print("I should have subtracted by now.");
+                    });
                     offerRejected();
                   }, // route to account page
                   child: Text(

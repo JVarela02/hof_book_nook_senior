@@ -39,7 +39,10 @@ exports.scheduleMeetupEmail = onSchedule("0 * * * *", async (event) => {
   // eslint-disable-next-line no-extend-native
   Date.prototype.addHours = function(h) {
     this.setTime(this.getTime() + (h*60*60*1000));
-    return this;
+    console.log("IN ADD HOURS");
+    console.log(epoch(this));
+    console.log("OUT ADD HOURS");
+    return epoch(this);
   };
   const keyreferences = [];
   const keyRef = await getFirestore()
@@ -71,8 +74,7 @@ exports.scheduleMeetupEmail = onSchedule("0 * * * *", async (event) => {
     const timestamp = transactionreferences[key].meetup[3];
     const now = Date.now();
     const tomorrow1 = new Date();
-    tomorrow1.setDate(tomorrow1.addHours(1));
-    const tomorrow = epoch(tomorrow1);
+    const tomorrow = tomorrow1.addHours(1);
     const receiver1 = transactionreferences[key].buyer_email;
     const receiver2 = transactionreferences[key].seller_email;
     const location = transactionreferences[key].meetup[0];

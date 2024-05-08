@@ -188,6 +188,12 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
       'sent_email': false
     });
 
+    // remove credits from buyer 
+    await getCreditID();
+    final documents = FirebaseFirestore.instance.collection('users').doc(creditIDList[0]);
+    documents.update({'credits': creditIDList[1] - int.parse(forSaleBook['Price']),});
+
+
     sendNotification(
       code,
       buyerName + " wants to buy your Book!",
@@ -292,17 +298,17 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
                 ElevatedButton(
                   onPressed: () async {
                     print("creating transaction");
-                    await getCreditID().then((data) {
-                      print(creditIDList);
-                      final documents = FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(creditIDList[0]);
-                      documents.update({
-                        'credits':
-                            creditIDList[1] - int.parse(forSaleBook['Price']),
-                      });
-                      print("I should have subtracted by now.");
-                    });
+                    // await getCreditID().then((data) {
+                    //   print(creditIDList);
+                    //   final documents = FirebaseFirestore.instance
+                    //       .collection('users')
+                    //       .doc(creditIDList[0]);
+                    //   documents.update({
+                    //     'credits':
+                    //         creditIDList[1] - int.parse(forSaleBook['forSale']['Price']),
+                    //   });
+                    //   print("I should have subtracted by now.");
+                    // });
                     //print(sellerEmail);
                     //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                     createTransaction();

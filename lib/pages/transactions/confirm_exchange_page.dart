@@ -80,31 +80,36 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
   // }
 
   List<dynamic> creditIDList = [];
+  String creditID = "";
+  int creditAmount = 0;
 
-  Future getCreditID() async {
+  Future getCreditID(String payer) async {
     await FirebaseFirestore.instance
         .collection('users')
-        .where('email', isEqualTo: user.email)
+        .where('email', isEqualTo: payer)
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
               //print(document.reference.id);
-              creditIDList.add(document.reference.id);
+              //creditIDList.add(document.reference.id);
+              creditID = document.reference.id;
+              print(creditID);
             },
           ),
         );
     var collection = FirebaseFirestore.instance.collection('users');
-    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    var docSnapshot = await collection.doc(creditID).get();
     if (docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
-      var credits = data?['credits'];
+      creditAmount = data?['credits'];
+      print(creditAmount);
       //print(credits);
       //print(creditIDList[0]);
       //print(credits.runtimeType);
-      creditIDList.add(credits);
-      //print(creditIDList);
-    }
+      //creditIDList.add(credits);
+      //print(creditIDList);    
+  }
   }
 
   List<dynamic> sellerCreditIDList = [];
@@ -248,6 +253,19 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       'timestamp': timestamp,
       'sent_email': false
     });
+
+    // Remove Credits from correct user 
+    // if remainder is < 0 remove from the seller 
+    // else if remainder is > 0 remove from buyer
+    if(int.parse(priceDifference) > 0){
+      await getCreditID(buyerEmail);
+      final documents = FirebaseFirestore.instance.collection('users').doc(creditID);
+      documents.update({'credits': (creditAmount - int.parse(priceDifference)),});
+    }
+    else{
+      // we do nothing because the seller shouldn't have credits removed for without consent  
+    }
+
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale
     await getReferenceIDs();
@@ -408,31 +426,32 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if (int.parse(forSaleBook['Price']) > 0) {
-                      await getCreditID().then((data) {
-                        print(creditIDList);
-                        final documents = FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(creditIDList[0]);
-                        documents.update({
-                          'credits':
-                              creditIDList[1] - int.parse(forSaleBook['Price']),
-                        });
-                      });
+                    // if (int.parse(forSaleBook['Price']) > 0) {
+                    //   await getCreditID().then((data) {
+                    //     print(creditIDList);
+                    //     final documents = FirebaseFirestore.instance
+                    //         .collection('users')
+                    //         .doc(creditIDList[0]);
+                    //     documents.update({
+                    //       'credits':
+                    //           creditIDList[1] - int.parse(forSaleBook['Price']),
+                    //     });
+                    //   });
+                    //   createTransaction();
+                    // } 
+                    // else if (int.parse(forSaleBook['Price']) < 0) {
+                    //   await getCreditID().then((data) {
+                    //     print(creditIDList);
+                    //     final documents = FirebaseFirestore.instance
+                    //         .collection('users')
+                    //         .doc(creditIDList[0]);
+                    //     documents.update({
+                    //       'credits': sellerCreditIDList[1] -
+                    //           int.parse(forSaleBook['Price']),
+                    //     });
+                    //   });
                       createTransaction();
-                    } else if (int.parse(forSaleBook['Price']) < 0) {
-                      await getCreditID().then((data) {
-                        print(creditIDList);
-                        final documents = FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(creditIDList[0]);
-                        documents.update({
-                          'credits': sellerCreditIDList[1] -
-                              int.parse(forSaleBook['Price']),
-                        });
-                      });
-                      createTransaction();
-                    }
+                    //}
 
                     //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                     // This is where the purchase will be truly confirmed. Send email to other user notifying

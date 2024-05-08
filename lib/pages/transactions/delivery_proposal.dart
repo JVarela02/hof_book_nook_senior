@@ -1110,7 +1110,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
 
     transaction_document.update({
-      'meetup': [location, meet, time, dateInEpoch],
+      'meetup': [location, meet, time, int.parse(dateInEpoch)],
     });
 
     print("transactions updated");
@@ -1179,23 +1179,23 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
         return NotificationPage();
       }));
       print("notification updated");
     } else {
       print("ha nope no notification");
       // send back to transaction page
-      
+
       Navigator.pop(context);
       Navigator.pop(context);
       //Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
         return ActTransPage();
       }));
     }
-
-    
   }
 
   @override

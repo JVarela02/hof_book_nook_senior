@@ -104,9 +104,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       //print(credits.runtimeType);
       creditIDList.add(credits);
       //print(creditIDList);
-       
-  }
-
+    }
   }
 
   List<dynamic> sellerCreditIDList = [];
@@ -130,9 +128,7 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       Map<String, dynamic>? data = docSnapshot.data();
       var credits = data?['credits'];
       sellerCreditIDList.add(credits);
-       
-  }
-
+    }
   }
 
   var forSaleReference = "";
@@ -249,7 +245,8 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
       'status': "offer",
       'transaction_ID': code,
       'meetup': [],
-      'timestamp': timestamp
+      'timestamp': timestamp,
+      'sent_email': false
     });
 
     // Set textbooks as in negotiations so it doesn't appear as available for sale
@@ -325,11 +322,14 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              forSaleBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints.tightFor(width: 400),
+                              child: Text(
+                                forSaleBook['Title'],
+                                style: GoogleFonts.merriweather(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -408,30 +408,32 @@ class ConfirmExchangePageState extends State<ConfirmExchangePage> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    if(int.parse(forSaleBook['Price']) > 0) {
+                    if (int.parse(forSaleBook['Price']) > 0) {
                       await getCreditID().then((data) {
-                                  print(creditIDList);
-                                  final documents = FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(creditIDList[0]);
-                                    documents.update({
-                                      'credits': creditIDList[1] - int.parse(forSaleBook['Price']),
-                                });
-                                });
+                        print(creditIDList);
+                        final documents = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(creditIDList[0]);
+                        documents.update({
+                          'credits':
+                              creditIDList[1] - int.parse(forSaleBook['Price']),
+                        });
+                      });
                       createTransaction();
                     } else if (int.parse(forSaleBook['Price']) < 0) {
                       await getCreditID().then((data) {
-                                  print(creditIDList);
-                                  final documents = FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(creditIDList[0]);
-                                    documents.update({
-                                      'credits': sellerCreditIDList[1] - int.parse(forSaleBook['Price']),
-                                });
-                                });
+                        print(creditIDList);
+                        final documents = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(creditIDList[0]);
+                        documents.update({
+                          'credits': sellerCreditIDList[1] -
+                              int.parse(forSaleBook['Price']),
+                        });
+                      });
                       createTransaction();
                     }
-                    
+
                     //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                     // This is where the purchase will be truly confirmed. Send email to other user notifying
                   }, // route to account page

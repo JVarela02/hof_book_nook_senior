@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:google_fonts/google_fonts.dart';
+//import 'package:google_fonts/google_fonts.dart';
 import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/repeated_functions.dart';
@@ -40,6 +40,7 @@ class finalImageConfirmPageState extends State<finalImageConfirmPage> {
 
   purchaseDelivered() async {
       // upload image to transaction
+      print("transaction refernce: " + transactionReference);
       //final imagesRef = storageRef.child("images");
       String fileName = "pDelivered" + transactionData['transaction_ID'].toString() + " - " + transactionData['seller'] +".jpg";
       print("file name is $fileName");
@@ -108,10 +109,8 @@ class finalImageConfirmPageState extends State<finalImageConfirmPage> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-        return NotificationPage();
-        }));
+      //Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {return NotificationPage();}));
     } else {
       print("ha nope no notification");
       Navigator.pop(context);
@@ -152,7 +151,7 @@ class finalImageConfirmPageState extends State<finalImageConfirmPage> {
         transactionData['seller'] +
             " has marked " +
             transactionData['forSale']['Title'] +
-            " as received and" + transactionData['forExchange']['Title'] + "as devliered at " + transactionData['meetup'][0] + "please confirm your receipt of the exchange at this time",
+            " as received and " + transactionData['forExchange']['Title'] + "as devliered at " + transactionData['meetup'][0] + "please confirm your receipt of the exchange at this time",
         transactionData['seller_email'],
         transactionData['buyer_email']);
     print("new notification uploaded");
@@ -180,6 +179,7 @@ class finalImageConfirmPageState extends State<finalImageConfirmPage> {
         'read': true,
       });
       print("notification updated");
+      Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);

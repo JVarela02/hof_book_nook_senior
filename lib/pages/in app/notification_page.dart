@@ -60,6 +60,20 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
+  void showInvalidStatus() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Unable to Open'),
+              content: Text('Either this transaction has been completed or canceled. Please refer to your Active Transactions page from your account page for more information. If you believe you have gotten this in error please send a ticket from the Get Help page. Thank you'),
+            ),
+          );
+      }
+    );
+  }
+
   whereTo(var transaction, transaction_reference, notification_reference) {
     print('in whereTo');
     var getStatus = transaction['status'];
@@ -282,14 +296,7 @@ class _NotificationPageState extends State<NotificationPage> {
     }
 
     else{
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return NotifCompletePage();
-            },
-          ),
-        );
+      showInvalidStatus();
     }
   }
 
@@ -580,8 +587,8 @@ class _NotificationPageState extends State<NotificationPage> {
                           trailing: Icon(
                             Icons.square_outlined,
                           ),
-                          onTap: () =>
-                              showDialogBox(myNotificationRefernces[index]),
+                          onTap: () 
+                              {showDialogBox(myNotificationRefernces[index]);}
                         );
                       } else {
                         return SizedBox(height: 20);

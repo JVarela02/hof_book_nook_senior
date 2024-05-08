@@ -12,8 +12,8 @@ import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
 // import 'package:the_hof_book_nook/read%20data/get_textbook_info.dart';
 // import 'package:the_hof_book_nook/read%20data/get_account_info.dart';
 import 'package:http/http.dart' as http;
-import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
-import 'package:the_hof_book_nook/repeated_functions.dart';
+// import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
+// import 'package:the_hof_book_nook/repeated_functions.dart';
 
 class SupportPage extends StatefulWidget {
   const SupportPage({super.key});

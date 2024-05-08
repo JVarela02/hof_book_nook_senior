@@ -92,9 +92,7 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
       //print(credits.runtimeType);
       creditIDList.add(credits);
       //print(creditIDList);
-       
-  }
-
+    }
   }
 
   var forSaleReference = "";
@@ -186,7 +184,8 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
       'status': "purchase",
       'transaction_ID': code,
       'meetup': [],
-      'timestamp': timestamp
+      'timestamp': timestamp,
+      'sent_email': false
     });
 
     sendNotification(
@@ -251,11 +250,14 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              forSaleBook['Title'],
-                              style: GoogleFonts.merriweather(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints.tightFor(width: 400),
+                              child: Text(
+                                forSaleBook['Title'],
+                                style: GoogleFonts.merriweather(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -291,15 +293,16 @@ class ConfirmPurchasePageState extends State<ConfirmPurchasePage> {
                   onPressed: () async {
                     print("creating transaction");
                     await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] - int.parse(forSaleBook['Price']),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                      print(creditIDList);
+                      final documents = FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(creditIDList[0]);
+                      documents.update({
+                        'credits':
+                            creditIDList[1] - int.parse(forSaleBook['Price']),
+                      });
+                      print("I should have subtracted by now.");
+                    });
                     //print(sellerEmail);
                     //emailSeller(user_name: buyerName, textbook_name: forSaleBook["Title"].toString(), seller_email: sellerEmail);
                     createTransaction();

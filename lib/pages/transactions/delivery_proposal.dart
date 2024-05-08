@@ -1069,14 +1069,14 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
   }
 
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime.now().add(Duration(days: 1));
   String selectedDateText = "Select Date";
   var dateInEpoch;
 
   selectDate() {
     showDatePicker(
             context: context,
-            initialDate: DateTime.now(),
+            initialDate: DateTime.now().add(Duration(days: 1)),
             firstDate: DateTime.now(),
             lastDate: DateTime.now().add(Duration(days: 7)))
         .then((value) {
@@ -1110,7 +1110,7 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
     }
 
     transaction_document.update({
-      'meetup': [location, meet, time, dateInEpoch],
+      'meetup': [location, meet, time, int.parse(dateInEpoch)],
     });
 
     print("transactions updated");
@@ -1179,23 +1179,23 @@ class DeliveryProposalPageState extends State<DeliveryProposalPage> {
       Navigator.pop(context);
       Navigator.pop(context);
       Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
         return NotificationPage();
       }));
       print("notification updated");
     } else {
       print("ha nope no notification");
       // send back to transaction page
-      
+
       Navigator.pop(context);
       Navigator.pop(context);
       //Navigator.pop(context);
-      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
         return ActTransPage();
       }));
     }
-
-    
   }
 
   @override

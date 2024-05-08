@@ -32,75 +32,85 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   
   int remainder= 0;
   String remainderText = "";
+  String remover = "";
   checkRemainder() {
-    int remainder = int.parse(transactionData['remainder']);
+    remainder = int.parse(transactionData['remainder']);
+    print(remainder);
     if (remainder < 0) {
       remainderText =
           "You would pay buyer " + (-remainder).toString() + " credits";
+      remover = transactionData['seller_email'];
     }
-    if (remainder == 0) {
+    else if (remainder == 0) {
       remainderText = "No credits would be owed";
-    } else {
+      remover = "";
+    } 
+    else {
       remainderText =
           "Buyer would also pay " + remainder.toString() + " credits";
+      remover = transactionData['buyer_email'];
     }
+    print("remover is ${remover}");
   }
 
   List<dynamic> creditIDList = [];
+  String creditID = "";
+  int creditAmount = 0;
 
-  Future getCreditID() async {
+  Future getCreditID(String payer) async {
     await FirebaseFirestore.instance
         .collection('users')
-        .where('email', isEqualTo: user.email)
+        .where('email', isEqualTo: payer)
         .get()
         .then(
           (snapshot) => snapshot.docs.forEach(
             (document) {
               //print(document.reference.id);
-              creditIDList.add(document.reference.id);
+              //creditIDList.add(document.reference.id);
+              creditID = document.reference.id;
+              print(creditID);
             },
           ),
         );
     var collection = FirebaseFirestore.instance.collection('users');
-    var docSnapshot = await collection.doc(creditIDList[0]).get();
+    var docSnapshot = await collection.doc(creditID).get();
     if (docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
-      var credits = data?['credits'];
+      creditAmount = data?['credits'];
+      print(creditAmount);
       //print(credits);
       //print(creditIDList[0]);
       //print(credits.runtimeType);
-      creditIDList.add(credits);
-      //print(creditIDList);
+      //creditIDList.add(credits);
+      //print(creditIDList);    
+  }
+  }
+
+  // List<dynamic> sellerCreditIDList = [];
+
+  // Future getCreditIDSeller() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: transactionData['seller_email'])
+  //       .get()
+  //       .then(
+  //         (snapshot) => snapshot.docs.forEach(
+  //           (document) {
+  //             //print(document.reference.id);
+  //             sellerCreditIDList.add(document.reference.id);
+  //           },
+  //         ),
+  //       );
+  //   var collection = FirebaseFirestore.instance.collection('users');
+  //   var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+  //   if (docSnapshot.exists) {
+  //     Map<String, dynamic>? data = docSnapshot.data();
+  //     var credits = data?['credits'];
+  //     sellerCreditIDList.add(credits);
        
-  }
+  // }
 
-  }
-
-  List<dynamic> sellerCreditIDList = [];
-
-  Future getCreditIDSeller() async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: transactionData['seller_email'])
-        .get()
-        .then(
-          (snapshot) => snapshot.docs.forEach(
-            (document) {
-              //print(document.reference.id);
-              sellerCreditIDList.add(document.reference.id);
-            },
-          ),
-        );
-    var collection = FirebaseFirestore.instance.collection('users');
-    var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
-    if (docSnapshot.exists) {
-      Map<String, dynamic>? data = docSnapshot.data();
-      var credits = data?['credits'];
-      sellerCreditIDList.add(credits);
-       
-  }
-
-  }
+  // }
 
   var saleTextbookReference = "";
   Future findTextbook(String txtID, String Buyer) async {
@@ -120,7 +130,47 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         );
   }
 
-  offerAccepted() {
+  offerAccepted() async{
+    // Remove Credits from Accepted Person 
+    await getCreditID(remover);
+    print("remover is ${remover}");
+    print("remainder is " + remainder.toString());
+    final documents = FirebaseFirestore.instance.collection('users').doc(creditID);
+    if(remover == transactionData['seller_email']){
+      print("in if");
+      if(creditAmount > -remainder){
+          print(creditAmount - -remainder);
+        documents.update({'credits': (creditAmount - -remainder),});
+        }
+      else{
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text("Insufficient Funds"),
+              content: Text("I'm sorry you do not have enough credits to complete this transaction"),
+              actions: [
+                TextButton(
+                  //textColor: Colors.black,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                ),
+              ],
+            ),
+          );
+          },
+          );
+      }
+    }
+    else{
+      // don't remove anything because we already removed it when the offer was originally sent
+    }
+    
+    
+
     // Updates status to exchange 
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
@@ -147,6 +197,14 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
 
   offerRejected() async {
     print("in offer rejected");
+ 
+    // return the credits to the buyer if they had some taken out on hold 
+    await getCreditID(remover);
+    final documents = FirebaseFirestore.instance.collection('users').doc(creditID);
+    if(remover == transactionData['buyer_email']){
+      documents.update({'credits': (creditAmount + remainder),});
+    }
+
     // update transaction status to "counter-offer"
     final transaction_document = FirebaseFirestore.instance.collection('transactions').doc(transactionReference);
     transaction_document.update({'status': "counter",});
@@ -391,19 +449,19 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    print("rawr");
-                    await checkRemainder();
-                    await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price'] - remainder),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
-                    offerAccepted();
+                    // print("rawr");
+                    // //await checkRemainder();
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price'] - remainder),                                   
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
+                    await offerAccepted();
                   }, // route to account page
                   child: Text(
                     'Accept Offer',
@@ -414,16 +472,16 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 ElevatedButton(
                   onPressed: () async {
                     print("boo");
-                    await getCreditID().then((data) {
-                                print(creditIDList);
-                                final documents = FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(creditIDList[0]);
-                                  documents.update({
-                                    'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
-                              });
-                              print("I should have subtracted by now.");
-                              });
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price']),                                   
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
                     offerRejected();
                   }, // route to account page
                   child: Text(

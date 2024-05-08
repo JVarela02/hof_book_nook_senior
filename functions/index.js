@@ -31,7 +31,16 @@ initializeApp();
 //  console.log(`Rest API started successfully`);
 // });
 
-exports.scheduleMeetupEmail = onSchedule("every day 20:00", async (event) => {
+exports.scheduleMeetupEmail = onSchedule("0 * * * *", async (event) => {
+  function epoch(date) {
+    return Date.parse(date);
+  }
+  // https://stackoverflow.com/questions/1050720/how-to-add-hours-to-a-date-object
+  // eslint-disable-next-line no-extend-native
+  Date.prototype.addHours = function(h) {
+    this.setTime(this.getTime() + (h*60*60*1000));
+    return this;
+  };
   const keyreferences = [];
   const keyRef = await getFirestore()
       .collection("shhhh").get().then((snapshot) =>
@@ -57,14 +66,12 @@ exports.scheduleMeetupEmail = onSchedule("every day 20:00", async (event) => {
   console.log("HERE'S THE TRANSACTION REFERENCES ARRAY");
   console.log(emailRef);
   Object.keys(transactionreferences).forEach((key) => {
+    console.log(transactionreferences[key].sent_email);
     console.log(transactionreferences[key]);
     const timestamp = transactionreferences[key].meetup[3];
-    function epoch(date) {
-      return Date.parse(date);
-    }
     const now = Date.now();
     const tomorrow1 = new Date();
-    tomorrow1.setDate(tomorrow1.getDate() + 1);
+    tomorrow1.setDate(tomorrow1.addHours(1));
     const tomorrow = epoch(tomorrow1);
     const receiver1 = transactionreferences[key].buyer_email;
     const receiver2 = transactionreferences[key].seller_email;
@@ -107,7 +114,6 @@ exports.scheduleMeetupEmail = onSchedule("every day 20:00", async (event) => {
         console.log("FAILED...", err);
       },
       );
-
       emailjs.send(serviceId, templateID, templateParams2, {
         publicKey: "O7K884SMxRo1npb9t",
         privateKey: privkey,

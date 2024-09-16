@@ -3,16 +3,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:the_hof_book_nook/pages/in%20app/account_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/listing_page.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/buyer_receipt_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
 import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/seller_delivery_page.dart';
 import 'package:the_hof_book_nook/read%20data/get_notification_info.dart';
+//import 'package:cloud_functions/cloud_functions.dart';
+
+//FirebaseFunctions functions = FirebaseFunctions.instance;
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -27,10 +33,68 @@ class _NotificationPageState extends State<NotificationPage> {
   List<String> myNotificationRefernces = [];
   List<String> myTransactionRefernces = [];
 
+  checkType(var transaction){
+    print("in checkType");
+    var type;
+    if (transaction['forExchange'] == null){
+      type = "purchase";
+    }
+    else{
+      type = "exchange";
+    }
+    print(type);
+    return type;
+  }
+
+  void showErrorBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Still Not Open'),
+              content: Text('It is still not your meet-up time. The page will open at that time.'),
+            ),
+          );
+      }
+    );
+  }
+
+  void showInvalidStatus() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Unable to Open'),
+              content: Text('Either this transaction has been completed or canceled. Please refer to your Active Transactions page from your account page for more information. If you believe you have gotten this in error please send a ticket from the Get Help page. Thank you'),
+            ),
+          );
+      }
+    );
+  }
+
   whereTo(var transaction, transaction_reference, notification_reference) {
     print('in whereTo');
     var getStatus = transaction['status'];
+    String type = checkType(transaction);
     print('Status of transaction is ' + getStatus);
+    int open = -2;
+    if(getStatus == "Await")
+      {String rightnowString = DateFormat(' MMM d, yyyy H:mm a').format(DateTime.now());
+      var rightNow = DateFormat(' MMM d, yyyy H:mm a').parse(rightnowString);
+      String meetTimeString = transaction['meetup'][1] + " " + transaction['meetup'][2];
+      var meetTime = DateFormat(' MMM d, yyyy H:mm a').parse(meetTimeString);
+      open = rightNow.compareTo(meetTime);
+      if(open >= 0){
+        print("open");
+      }
+      else{
+        print("closed");
+      }}
+    else{
+      open = -3;
+    }
 
     // Offer Page Route
     if (getStatus == "offer") {
@@ -55,8 +119,7 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if (getStatus == "counter") {
+    } else if (getStatus == "counter") {
       print("in second if");
       if (transaction['buyer_email'] == user.email) {
         Navigator.push(
@@ -78,8 +141,7 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if(getStatus == "purchase" || getStatus == "exchange"){
+    } else if (getStatus == "purchase" || getStatus == "exchange") {
       if (transaction['seller_email'] == user.email) {
         Navigator.push(
           context,
@@ -100,27 +162,99 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
-    else if(getStatus == "incomplete"){
+    } else if (getStatus == "incomplete") {
       Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return DeliveryProposalPage(
+                transaction, transaction_reference, notification_reference);
+          },
+        ),
+      );
+    } else if (getStatus == "Meetup-Offer") {
+      if (transaction['buyer_email'] == user.email) {
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return DeliveryProposalPage(
+              return MeetupConfirmPage(
                   transaction, transaction_reference, notification_reference);
             },
           ),
         );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    } else if (getStatus == "Meetup-Counter") {
+      if (transaction['seller_email'] == user.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MeetupConfirmPage(
+                  transaction, transaction_reference, notification_reference);
+            },
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
     }
 
-    else if(getStatus == "Meetup-Offer"){
+    else if(getStatus == "Await"){
+      print(type);
+      print(open);
+      if(open >= 0){
+        if(transaction['seller_email'] == user.email){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return SellerDeliveryPage(
+                    transaction, transaction_reference, notification_reference,type);
+              },
+            ),
+          );
+        }
+        else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return NotifCompletePage();
+              },
+            ),
+          );
+        }}
+        else{
+          // ERROR DIALOGUE
+          showErrorBox();
+        }
+    }
+
+    else if(getStatus == "Purchase Delivered"){
       if(transaction['buyer_email'] == user.email){
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return MeetupConfirmPage(
-                  transaction, transaction_reference, notification_reference);
+              return BuyerReceiptPage(
+                  transaction, transaction_reference, notification_reference,type);
             },
           ),
         );
@@ -135,16 +269,16 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
       }
-    }
+    } 
 
-    else if(getStatus == "Meetup-Counter"){
-      if(transaction['seller_email'] == user.email){
+    else if(getStatus == "Exchange Delivered"){
+      if(transaction['buyer_email'] == user.email){
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) {
-              return MeetupConfirmPage(
-                  transaction, transaction_reference, notification_reference);
+              return SellerDeliveryPage(
+                  transaction, transaction_reference, notification_reference,type);
             },
           ),
         );
@@ -161,6 +295,9 @@ class _NotificationPageState extends State<NotificationPage> {
       }
     }
 
+    else{
+      showInvalidStatus();
+    }
   }
 
   //get textbooks
@@ -197,6 +334,21 @@ class _NotificationPageState extends State<NotificationPage> {
           ),
         );
   }
+
+  //Future<void> getStuff() async {
+  //  print("IM IN GET STUFF");
+  //  final result =
+  //      await FirebaseFunctions.instance.httpsCallable('testsendemail').call(
+  //    {
+  //      "text": 'text',
+  //      "push": true,
+  //    },
+  //  );
+  //  print("JUST CALLED STUFF");
+  //  var response = result.data as String;
+  //  print("IN GET STUFF RIGHT NOW FR FR");
+  //  print(response);
+  //}
 
   void showDialogBox(String index) async {
     showDialog(
@@ -350,6 +502,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
+                      //getStuff();
                       Navigator.of(context).pop();
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
@@ -434,8 +587,8 @@ class _NotificationPageState extends State<NotificationPage> {
                           trailing: Icon(
                             Icons.square_outlined,
                           ),
-                          onTap: () =>
-                              showDialogBox(myNotificationRefernces[index]),
+                          onTap: () 
+                              {showDialogBox(myNotificationRefernces[index]);}
                         );
                       } else {
                         return SizedBox(height: 20);

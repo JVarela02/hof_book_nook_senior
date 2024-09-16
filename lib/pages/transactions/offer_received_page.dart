@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_hof_book_nook/pages/in%20app/active_transactions.dart';
 // import 'package:the_hof_book_nook/pages/in%20app/home_page.dart';
 import 'package:the_hof_book_nook/pages/in%20app/notification_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
@@ -29,20 +30,85 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
   OfferReceivedPageState(this.transactionData, this.transactionReference,
       this.notificationReference);
 
+  int remainder = 0;
   String remainderText = "";
+  String remover = "";
   checkRemainder() {
-    int remainder = int.parse(transactionData['remainder']);
+    remainder = int.parse(transactionData['remainder']);
+    print(remainder);
     if (remainder < 0) {
       remainderText =
           "You would pay buyer " + (-remainder).toString() + " credits";
-    }
-    if (remainder == 0) {
+      remover = transactionData['seller_email'];
+    } else if (remainder == 0) {
       remainderText = "No credits would be owed";
+      remover = "";
     } else {
       remainderText =
           "Buyer would also pay " + remainder.toString() + " credits";
+      remover = transactionData['buyer_email'];
+    }
+    print("remover is ${remover}");
+  }
+
+  List<dynamic> creditIDList = [];
+  String creditID = "";
+  int creditAmount = 0;
+
+  Future getCreditID(String payer) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: payer)
+        .get()
+        .then(
+          (snapshot) => snapshot.docs.forEach(
+            (document) {
+              //print(document.reference.id);
+              //creditIDList.add(document.reference.id);
+              creditID = document.reference.id;
+              print(creditID);
+            },
+          ),
+        );
+    var collection = FirebaseFirestore.instance.collection('users');
+    var docSnapshot = await collection.doc(creditID).get();
+    if (docSnapshot.exists) {
+      Map<String, dynamic>? data = docSnapshot.data();
+      creditAmount = data?['credits'];
+      print(creditAmount);
+      //print(credits);
+      //print(creditIDList[0]);
+      //print(credits.runtimeType);
+      //creditIDList.add(credits);
+      //print(creditIDList);
     }
   }
+
+  // List<dynamic> sellerCreditIDList = [];
+
+  // Future getCreditIDSeller() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .where('email', isEqualTo: transactionData['seller_email'])
+  //       .get()
+  //       .then(
+  //         (snapshot) => snapshot.docs.forEach(
+  //           (document) {
+  //             //print(document.reference.id);
+  //             sellerCreditIDList.add(document.reference.id);
+  //           },
+  //         ),
+  //       );
+  //   var collection = FirebaseFirestore.instance.collection('users');
+  //   var docSnapshot = await collection.doc(sellerCreditIDList[0]).get();
+  //   if (docSnapshot.exists) {
+  //     Map<String, dynamic>? data = docSnapshot.data();
+  //     var credits = data?['credits'];
+  //     sellerCreditIDList.add(credits);
+
+  // }
+
+  // }
 
   var saleTextbookReference = "";
   Future findTextbook(String txtID, String Buyer) async {
@@ -62,8 +128,48 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         );
   }
 
-  offerAccepted() {
-    // Updates status to exchange 
+  offerAccepted() async {
+    // Remove Credits from Accepted Person
+    await getCreditID(remover);
+    print("remover is ${remover}");
+    print("remainder is " + remainder.toString());
+    final documents =
+        FirebaseFirestore.instance.collection('users').doc(creditID);
+    if (remover == transactionData['seller_email']) {
+      print("in if");
+      if (creditAmount > -remainder) {
+        print(creditAmount - -remainder);
+        documents.update({
+          'credits': (creditAmount - -remainder),
+        });
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Expanded(
+              child: AlertDialog(
+                title: Text("Insufficient Funds"),
+                content: Text(
+                    "I'm sorry you do not have enough credits to complete this transaction"),
+                actions: [
+                  TextButton(
+                    //textColor: Colors.black,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }
+    } else {
+      // don't remove anything because we already removed it when the offer was originally sent
+    }
+
+    // Updates status to exchange
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
         .doc(transactionReference);
@@ -71,23 +177,35 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'status': "exchange",
     });
 
-    // pop this page and transfer to set-up meet-up page 
+    // pop this page and transfer to set-up meet-up page
     Navigator.of(context).pop();
     Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              return DeliveryProposalPage(
-                  transactionData, transactionReference, notificationReference);
-            },
-          ),
-        );
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return DeliveryProposalPage(
+              transactionData, transactionReference, notificationReference);
+        },
+      ),
+    );
 
     print("ahh");
     ;
   }
 
   offerRejected() async {
+    print("in offer rejected");
+
+    // return the credits to the buyer if they had some taken out on hold
+    await getCreditID(remover);
+    final documents =
+        FirebaseFirestore.instance.collection('users').doc(creditID);
+    if (remover == transactionData['buyer_email']) {
+      documents.update({
+        'credits': (creditAmount + remainder),
+      });
+    }
+
     // update transaction status to "counter-offer"
     final transaction_document = FirebaseFirestore.instance
         .collection('transactions')
@@ -96,21 +214,31 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
       'status': "counter",
     });
 
-    print("transactions updated");
+    print("updated status");
 
-    // update notification to "read"
-    if(notificationReference != 0 ){
-    final notification_document = FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(notificationReference);
-    notification_document.update({
-      'read': true,
+    // Update for Exchange Textbook inNegotiations status to False
+    await findTextbook(transactionData['forExchange']['Textbook ID'],
+        transactionData['buyer_email']);
+    print("found the textbook");
+    final forExchange_document = FirebaseFirestore.instance
+        .collection('textbooks')
+        .doc(saleTextbookReference);
+    print("got document");
+    forExchange_document.update({
+      'InNegotiations': false,
     });
-    print("notification updated");
-    }
-    else{
-      print("ha nope no notification");
-    }
+
+    print("changed book status");
+
+    // delete forExchange from the transaction so it no longer presents as an exchange in confirmation page
+    transaction_document.update(<String, dynamic>{
+      "forExchange": FieldValue.delete(),
+    });
+    //{'forExchange': FieldValue.delete()});
+
+    print("deleted forExchange");
+
+    print("transactions updated");
 
     // create a new notification for buyer
     sendNotification(
@@ -139,20 +267,34 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
         receiver_email: transactionData['buyer_email']);
     print("email sent");
 
-
-    // Update for Exchange Textbook inNegotiations status to False 
-    await findTextbook(transactionData['forSale']['Textbook ID'], transactionData['buyer']);
-    final forExchange_document = FirebaseFirestore.instance.collection('textbooks').doc(saleTextbookReference);
-      forExchange_document.update({'InNegotiations': false, });
-
-
-    // send back to navigation page
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.pop(context);
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return NotificationPage();
-    }));
+    // update notification to "read" and send back to correct page
+    if (notificationReference != "0") {
+      final notification_document = FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationReference);
+      notification_document.update({
+        'read': true,
+      });
+      print("notification updated");
+      // send back to navigation page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return NotificationPage();
+      }));
+    } else {
+      print("ha nope no notification");
+      // send back to transaction page
+      Navigator.pop(context);
+      Navigator.pop(context);
+      // Navigator.pop(context);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return ActTransPage();
+      }));
+    }
   }
 
   @override
@@ -319,9 +461,20 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    print("rawr");
-                    offerAccepted();
+                  onPressed: () async {
+                    // print("rawr");
+                    // //await checkRemainder();
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price'] - remainder),
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
+                    await offerAccepted();
                   }, // route to account page
                   child: Text(
                     'Accept Offer',
@@ -330,8 +483,18 @@ class OfferReceivedPageState extends State<OfferReceivedPage> {
                 ),
                 SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     print("boo");
+                    // await getCreditID().then((data) {
+                    //             print(creditIDList);
+                    //             final documents = FirebaseFirestore.instance
+                    //           .collection('users')
+                    //           .doc(creditIDList[0]);
+                    //               documents.update({
+                    //                 'credits': creditIDList[1] + int.parse(transactionData['Price']),
+                    //           });
+                    //           print("I should have subtracted by now.");
+                    //           });
                     offerRejected();
                   }, // route to account page
                   child: Text(

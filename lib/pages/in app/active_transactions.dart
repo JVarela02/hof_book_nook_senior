@@ -3,12 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:intl/intl.dart';
 import 'package:the_hof_book_nook/pages/sign%20ins/login_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/buyer_receipt_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/counter_offer_page.dart';
 import 'package:the_hof_book_nook/pages/transactions/delivery_proposal.dart';
 import 'package:the_hof_book_nook/pages/transactions/meetup_confirm.dart';
 import 'package:the_hof_book_nook/pages/transactions/notification_complete.dart';
 import 'package:the_hof_book_nook/pages/transactions/offer_received_page.dart';
+import 'package:the_hof_book_nook/pages/transactions/seller_delivery_page.dart';
 
 class ActTransPage extends StatefulWidget {
   const ActTransPage({super.key});
@@ -19,10 +22,82 @@ class ActTransPage extends StatefulWidget {
 
 class _ActTransPageState extends State<ActTransPage> {
 
-    whereTo(var transaction, transaction_reference, notification_reference) {
+checkType(var transaction){
+    print("in checkType");
+    var type;
+    if (transaction['forExchange'] == null){
+      type = "purchase";
+    }
+    else{
+      type = "exchange";
+    }
+    print(type);
+    return type;
+  }
+
+  void showErrorBox() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Still Not Open'),
+              content: Text('It is still not your meet-up time. The page will open at that time.'),
+            ),
+          );
+      }
+    );
+  }
+
+  void showComplete() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Completed Transaction'),
+              content: Text('This transaction has been completed by both parties. If you have any issues with the transaction please send a ticket through the Get Help page. Thank You'),
+            ),
+          );
+      }
+    );
+  }
+
+  void showCanceled() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+          return Expanded(
+            child: AlertDialog(
+              title: Text('Canceled Transaction'),
+              content: Text('This transaction has been canceled by both parties and is no longer available. If you believe you are getting this in error please send a ticket through the Get Help page. Thank You'),
+            ),
+          );
+      }
+    );
+  }
+
+  whereTo(var transaction, transaction_reference, notification_reference) {
     print('in whereTo');
     var getStatus = transaction['status'];
+    String type = checkType(transaction);
     print('Status of transaction is ' + getStatus);
+    int open = -2;
+    if(getStatus == "Await")
+      {String rightnowString = DateFormat(' MMM d, yyyy H:mm a').format(DateTime.now());
+      var rightNow = DateFormat(' MMM d, yyyy H:mm a').parse(rightnowString);
+      String meetTimeString = transaction['meetup'][1] + " " + transaction['meetup'][2];
+      var meetTime = DateFormat(' MMM d, yyyy H:mm a').parse(meetTimeString);
+      open = rightNow.compareTo(meetTime);
+      if(open >= 0){
+        print("open");
+      }
+      else{
+        print("closed");
+      }}
+    else{
+      open = -3;
+    }
 
     // Offer Page Route
     if (getStatus == "offer") {
@@ -153,12 +228,103 @@ class _ActTransPageState extends State<ActTransPage> {
       }
     }
 
+    else if(getStatus == "Await"){
+      print(type);
+      if(open >= 0){
+        if(transaction['seller_email'] == user.email){
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return SellerDeliveryPage(
+                    transaction, transaction_reference, notification_reference,type);
+              },
+            ),
+          );
+        }
+        else{
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return NotifCompletePage();
+              },
+            ),
+          );
+        }}
+        else{
+          // ERROR DIALOGUE
+          showErrorBox();
+        }
+    }
+
+    else if(getStatus == "Purchase Delivered"){
+      if(transaction['buyer_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return BuyerReceiptPage(
+                  transaction, transaction_reference, notification_reference,type);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    } 
+
+    else if(getStatus == "Exchange Delivered"){
+      if(transaction['seller_email'] == user.email){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return SellerDeliveryPage(
+                  transaction, transaction_reference, notification_reference,type);
+            },
+          ),
+        );
+      }
+      else{
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return NotifCompletePage();
+            },
+          ),
+        );
+      }
+    }
+
+    else if (getStatus == "Complete"){
+     showComplete();
+    }
+
+    else if(getStatus == "canceld"){
+      showCanceled();
+    }
+
+    else{
+      print("there shouldn't be anuthing else");
+    }
+
   }
 
    final user = FirebaseAuth.instance.currentUser!;
     List<dynamic> sellerList = [];
     List<dynamic> buyerList = [];
     List<String> transList = [];
+    List<String> actualTransRefs = [];
     List<dynamic> userTrans = [];
     List<dynamic> transIDList = [];
     List<dynamic> status = [];
@@ -205,6 +371,7 @@ class _ActTransPageState extends State<ActTransPage> {
           transIDList.add(data?['transaction_ID']);
           status.add(data?['status']);
           titleList.add(data?['forSale']['Title']);
+          actualTransRefs.add(transList[i]);
           fullTransactionList.add(data);
         }
       }
@@ -229,6 +396,18 @@ class _ActTransPageState extends State<ActTransPage> {
       }
 
       }
+  
+  Widget statusIs(index){
+    if(status[index] == "Complete"){
+      return(Icon(Icons.check_circle_outlined));
+    }
+    else if(status[index] == "canceled"){
+      return(Icon(Icons.cancel_outlined));
+    }
+    else{
+      return(Icon(Icons.menu_book_rounded));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -285,12 +464,14 @@ class _ActTransPageState extends State<ActTransPage> {
                                  
                           subtitle:
                                 Text("Transaction ID: "+ transIDList[index].toString()),
-                          trailing: Icon(
-                            Icons.square_outlined,
-                          ),
+                                //Text("Transaction Reference: "+ actualTransRefs[index].toString()),
+                          trailing: 
+                          //Icon(Icons.square_outlined,),
+                          statusIs(index),
+                          
                           onTap: () {
-                              print("data being passed is " + transList[index]);
-                              whereTo(fullTransactionList[index], transList[index], "0");
+                              print("data being passed is " + actualTransRefs[index]);
+                              whereTo(fullTransactionList[index], actualTransRefs[index], "0");
                               //showDialogBox(transIDList[index]),
                           }
                         );

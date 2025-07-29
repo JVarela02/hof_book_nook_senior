@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 # hof_book_nook_senior
-Senior Seminar Version of Hof Book Nook
+Completed Version of Hof Book Nook application including Firebase Authentication, Storage and Firestore, Google Books API, Google Cloud Function, Email JS. 
 
 ## Getting Started
 
